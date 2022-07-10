@@ -2,7 +2,7 @@ use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum AuthenticationError {
-    #[error("Parameter validation failed. Response if required parameters are missing or if parameter values are invalid.")]
+    #[error("Parameter validation failed. Required parameters are missing or parameter values are invalid.")]
     ParameterValidationFailed,
     #[error("The incoming request did not contain a valid authentication information")]
     InvalidAPIKey,

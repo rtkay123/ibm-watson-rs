@@ -69,14 +69,17 @@ impl IamAuthenticator {
                 "grant_type=urn:ibm:params:oauth:grant-type:apikey&apikey={}",
                 api_key.as_ref()
             )))
-            .unwrap();
+            .map_err(|e| AuthenticationError::ConnectionError(e.to_string()))?;
         let https = hyper_rustls::HttpsConnectorBuilder::new()
             .with_native_roots()
             .https_only()
             .enable_http1()
             .build();
         let client = Client::builder().build(https);
-        let response = client.request(req).await.unwrap();
+        let response = client
+            .request(req)
+            .await
+            .map_err(|e| AuthenticationError::ConnectionError(e.to_string()))?;
         match response.status() {
             StatusCode::OK => {
                 // asynchronously aggregate the chunks of the body
@@ -88,5 +91,9 @@ impl IamAuthenticator {
             StatusCode::BAD_REQUEST => Err(AuthenticationError::ParameterValidationFailed),
             _ => unreachable!(),
         }
+    }
+
+    pub(crate) fn token_response(&self) -> &TokenResponse {
+        &self.access_token
     }
 }
