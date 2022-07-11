@@ -2,12 +2,7 @@ use crate::auth::IamAuthenticator;
 
 use self::voices::WatsonVoice;
 
-#[path = "custom-models/mod.rs"]
-pub mod custom_models;
-#[path = "custom-prompts/mod.rs"]
-pub mod custom_prompts;
-#[path = "custom-words/mod.rs"]
-pub mod custom_words;
+pub mod customisations;
 pub mod pronunciation;
 pub mod synthesis;
 pub mod voices;

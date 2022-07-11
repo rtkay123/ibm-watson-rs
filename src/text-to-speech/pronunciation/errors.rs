@@ -8,7 +8,7 @@ pub enum PronunciationError {
     NotAcceptable406,
     #[error("A required input parameter is null or a specified input parameter or header value is invalid or not supported")]
     BadRequest400,
-    #[error("The specified customization_id: {0} is invalid for the requesting credentials")]
+    #[error("The specified customisation_id: {0} is invalid for the requesting credentials")]
     Unuathorised401(String),
     #[error("The specified voice does not exist")]
     NotFound404,

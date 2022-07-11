@@ -23,6 +23,7 @@ pub(crate) struct TokenResponse {
     scope: Option<String>,
 }
 
+#[allow(dead_code)]
 impl TokenResponse {
     pub fn access_token(&self) -> &str {
         &self.access_token

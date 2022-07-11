@@ -5,11 +5,14 @@ use hyper::{
 };
 use serde::{Deserialize, Serialize};
 
-mod errors;
-pub use errors::*;
+pub mod errors;
 use url::Url;
 
-use super::{custom_models::CustomModel, TextToSpeech};
+use crate::tts::voices::errors::GetVoiceError;
+
+use self::errors::ListVoicesError;
+
+use super::{customisations::CustomModel, TextToSpeech};
 #[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct Voice {
     #[serde(rename = "url")]
@@ -23,11 +26,11 @@ pub struct Voice {
     #[serde(rename = "description")]
     pub description: String,
     #[serde(rename = "customizable")]
-    pub customizable: bool,
+    pub customisable: bool,
     #[serde(rename = "supported_features")]
     pub supported_features: Box<SupportedFeatures>,
     #[serde(rename = "customization", skip_serializing_if = "Option::is_none")]
-    pub customization: Option<Box<CustomModel>>,
+    pub customisation: Option<Box<CustomModel>>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Default, Serialize, Deserialize)]
