@@ -1,9 +1,10 @@
 use std::borrow::Cow;
+/// Errors that may be returned in speech synthesis requests
 pub mod errors;
 
 use hyper::{
     header::{HeaderValue, AUTHORIZATION},
-    Body, Client, Method, Request, StatusCode,
+    Body, Method, Request, StatusCode,
 };
 use url::{form_urlencoded::byte_serialize, Url};
 
@@ -11,45 +12,40 @@ use self::errors::SynthesisError;
 
 use super::TextToSpeech;
 
+/// The service can return audio in the following formats (MIME types):
 #[derive(Clone, Copy)]
 pub enum AudioFormat {
-    AudioAlaw {
-        sample_rate: u16,
-    },
+    /// You must specify the rate of the audio.
+    AudioAlaw { sample_rate: u16 },
+    /// The service returns audio with a sampling rate of 8000 Hz.
     AudioBasic,
-    AudioFlac {
-        sample_rate: Option<u16>,
-    },
+    /// You can optionally specify the rate of the audio. The default sampling rate is 22,050 Hz.
+    AudioFlac { sample_rate: Option<u16> },
+    /// You must specify the rate of the audio. You can optionally specify the endianness of the audio. The default endianness is little-endian
     AudioL16 {
         sample_rate: u16,
-        endianess: Option<AudioEndianess>,
+        endianess: Option<AudioEndianness>,
     },
-    AudioOgg {
-        sample_rate: Option<u16>,
-    },
-    AudioOggCodecsOpus {
-        sample_rate: Option<u16>,
-    },
-    AudioOggCodecsVorbis {
-        sample_rate: Option<u16>,
-    },
-    AudioMp3 {
-        sample_rate: Option<u16>,
-    },
-    AudioMpeg {
-        sample_rate: Option<u16>,
-    },
-    AudioMulaw {
-        sample_rate: u16,
-    },
-    AudioWav {
-        sample_rate: Option<u16>,
-    },
+    /// You can optionally specify the rate of the audio. The default sampling rate is 22,050 Hz
+    AudioOgg { sample_rate: Option<u16> },
+    /// You can optionally specify the rate of the audio. The default sampling rate is 22,050 Hz
+    AudioOggCodecsOpus { sample_rate: Option<u16> },
+    /// You can optionally specify the rate of the audio. The default sampling rate is 22,050 Hz
+    AudioOggCodecsVorbis { sample_rate: Option<u16> },
+    /// You can optionally specify the rate of the audio. The default sampling rate is 22,050 Hz
+    AudioMp3 { sample_rate: Option<u16> },
+    /// You can optionally specify the rate of the audio. The default sampling rate is 22,050 Hz
+    AudioMpeg { sample_rate: Option<u16> },
+    /// You must specify the rate of the audio
+    AudioMulaw { sample_rate: u16 },
+    /// You can optionally specify the rate of the audio. The default sampling rate is 22,050 Hz
+    AudioWav { sample_rate: Option<u16> },
+    /// The service returns the audio in the opus codec. The service returns audio with a sampling rate of 48,000 Hz
     AudioWebm,
+    /// The service returns audio with a sampling rate of 48,000 Hz
     AudioWebmCodecsOpus,
-    AudioWebmCodecsVorbis {
-        sample_rate: Option<u16>,
-    },
+    /// You can optionally specify the rate of the audio. The default sampling rate is 22,050 Hz
+    AudioWebmCodecsVorbis { sample_rate: Option<u16> },
 }
 
 impl Default for AudioFormat {
@@ -145,26 +141,61 @@ fn serialise_bytes(url: &str) -> Cow<'static, str> {
 }
 
 #[derive(Default, Clone, Copy)]
-pub enum AudioEndianess {
+/// The server expects the following values for audio endianness
+pub enum AudioEndianness {
+    /// Big Endian
     BigEndian,
     #[default]
+    /// Little Endian
     LittleEndian,
 }
 
-impl AudioEndianess {
+impl AudioEndianness {
+    /// The string value expected by the server for [`AudioEndianness`]
+    ///
+    /// [`AudioEndianness`]: Self
     pub fn id(&self) -> &str {
         match self {
-            AudioEndianess::BigEndian => "big-endian",
-            AudioEndianess::LittleEndian => "little-endian",
+            AudioEndianness::BigEndian => "big-endian",
+            AudioEndianness::LittleEndian => "little-endian",
         }
     }
 }
 
 impl TextToSpeech<'_> {
+    /// Synthesises text to audio that is spoken in the [`specified voice`]. The service bases its understanding of the language for the input text on the specified voice. Use a voice that matches the language of the input text.
+    ///
+    /// # Parameters
+    ///
+    /// * `text` - The text to synthesise
+    /// * `format` - The requested [`AudioFormat`] (MIME type) of the audio. Defaults to [`AudioOggCodecsOpus`]
+    /// * `customisation_id` - The customization ID (GUID) of a custom [`model`] to use for the synthesis. If a custom model is specified, it works only if it matches the [`language`] of the indicated voice. You must make the request with credentials for the instance of the service that owns the custom model. Omit the parameter to use the specified voice with no customization
+    ///
+    /// [`AudioFormat`]: super::synthesis::AudioFormat
+    /// [`AudioOggCodecsOpus`]: super::synthesis::AudioFormat::AudioOggCodecsOpus
+    /// [`name`]: super::voices::Voice::name
+    /// [`language`]: super::voices::Voice::language
+    /// [`gender`]: super::voices::Voice::gender
+    /// [`specified voice`]: super::TextToSpeech::set_voice()
+    /// [`model`]: super::customisations::Model
+    ///
+    /// # Example
+    /// ``` no_run
+    /// # use ibm_watson::{
+    /// #     auth::IamAuthenticator,
+    /// #     tts::{voices::WatsonVoice, TextToSpeech},
+    /// # };
+    /// # async fn foo()-> Result<(), Box<dyn std::error::Error>> {
+    /// # let auth = IamAuthenticator::new("api_key").await?;
+    /// # let tts = TextToSpeech::new(&auth, "service_url");
+    /// let synth_bytes = tts.synthesise("Hey there", None, None).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     pub async fn synthesise(
         &self,
         text: impl AsRef<str>,
-        accept: Option<AudioFormat>,
+        format: Option<AudioFormat>,
         customisation_id: Option<&str>,
     ) -> Result<bytes::Bytes, SynthesisError> {
         let mut url = Url::parse(self.service_url).unwrap();
@@ -172,7 +203,7 @@ impl TextToSpeech<'_> {
         url.set_query(customisation_id);
         url.query_pairs_mut().append_pair("text", text.as_ref());
         url.query_pairs_mut().append_pair("voice", self.voice.id());
-        if let Some(format) = accept {
+        if let Some(format) = format {
             url.query_pairs_mut().append_pair("accept", &format.id());
         }
         let req = Request::builder()

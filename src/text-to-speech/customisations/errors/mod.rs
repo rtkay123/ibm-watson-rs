@@ -1,4 +1,3 @@
-pub mod errors;
 mod models;
 mod prompts;
 mod words;

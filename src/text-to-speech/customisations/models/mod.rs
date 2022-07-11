@@ -11,15 +11,13 @@ use url::Url;
 
 use crate::tts::TextToSpeech;
 
-use self::errors::{
-    CreateModelError, DeleteModelError, GetModelError, ListModelError, UpdateModelError,
+use super::{
+    errors::{CreateModelError, DeleteModelError, GetModelError, ListModelError, UpdateModelError},
+    prompts::Prompt,
+    words::Word,
 };
 
-use super::{prompts::Prompt, words::Word};
-
-pub mod errors;
-
-#[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Eq, Default, Serialize, Deserialize)]
 pub struct Model {
     /// the customization id (guid) of the custom model. the create a custom model method returns only this field. it does not not return the other fields of this object.
     #[serde(rename = "customization_id")]

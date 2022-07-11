@@ -33,6 +33,38 @@ impl PhonemeFormat {
 }
 
 impl TextToSpeech<'_> {
+    /// Gets the phonetic [`Pronunciation`] for the specified word. You can request the pronunciation for a specific [`format`]. You can also request the pronunciation for a specific [`voice`] to see the default translation for the language of that voice or for a specific custom [`model`] to see the translation for that model.
+    ///
+    /// # Parameters
+    ///
+    /// * `text` - The word for which the pronunciation is requested
+    /// * `voice` - A [`voice`] that specifies the language in which the pronunciation is to be returned. If [`None`], the voice you [`set`] for the service will be used. If none has been set, the [`default`] will be used
+    /// * `format` - The [`PhonemeFormat`] in which to return the pronunciation. The Arabic, Chinese, Dutch, Australian English, and Korean languages support only IPA. Omit the parameter to obtain the pronunciation in the default format
+    /// * `customisation_id` - The customisation ID (GUID) of a custom [`model`] for which the pronunciation is to be returned. The language of a specified custom model must match the language of the specified voice. If the word is not defined in the specified custom model, the service returns the default translation for the custom model's language. You must make the request with credentials for the instance of the service that owns the custom model. Omit the parameter to see the translation for the specified voice with no customisation
+    ///
+    /// # Example
+    /// ``` no_run
+    /// # use ibm_watson::{
+    /// #     auth::IamAuthenticator,
+    /// #     tts::{voices::WatsonVoice, TextToSpeech},
+    /// # };
+    /// # async fn foo()-> Result<(), Box<dyn std::error::Error>> {
+    /// # let auth = IamAuthenticator::new("api_key").await?;
+    /// # let tts = TextToSpeech::new(&auth, "service_url");
+    /// let customisation_id = Some("cust-id");
+    /// let pronunciation = tts.get_pronunciation("word", None, None, customisation_id).await?;
+    /// println!("{:#?}", pronunciation);
+    /// # Ok(())
+    /// # }
+    /// ```
+    /// [`None`]: std::option::Option::None
+    /// [`set`]: Self::set_voice()
+    /// [`voice`]: super::voices::WatsonVoice
+    /// [`default`]: super::voices::WatsonVoice::EnUsMichaelV3
+    /// [`PhonemeFormat`]: self::PhonemeFormat
+    /// [`format`]: self::PhonemeFormat
+    /// [`model`]: self::customisations::Model
+    /// [`Pronunciation`]: self::Pronunciation
     pub async fn get_pronunciation(
         &self,
         text: impl AsRef<str>,

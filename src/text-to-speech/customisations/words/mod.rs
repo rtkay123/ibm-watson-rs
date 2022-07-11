@@ -8,8 +8,7 @@ use url::Url;
 
 use crate::tts::TextToSpeech;
 
-use self::errors::{AddWordError, DeleteWordError, GetWordError, ListWordsError};
-pub mod errors;
+use super::errors::{AddWordError, DeleteWordError, GetWordError, ListWordsError};
 
 #[derive(Clone, Debug, Eq, PartialEq, Default, Serialize, Deserialize)]
 pub struct Word {
@@ -25,6 +24,43 @@ pub struct Word {
 }
 
 impl TextToSpeech<'_> {
+    /// Adds one or more words and their translations to the specified custom [`model`]. Adding a new translation for a word that already exists in a custom model overwrites the word's existing translation. A custom model can contain no more than 20,000 entries. You must use credentials for the instance of the service that owns a model to add words to it.
+    ///
+    /// # Parameters
+    ///
+    /// * `customisation_id` - The customisation ID (GUID) of the custom [`model`]. You must make the request with credentials for the instance of the service that owns the custom model
+    /// * `words` - [`Words`] that are to be added or updated for the custom model and the translation for each specified word
+    ///
+    /// # Example
+    /// ``` no_run
+    /// # use ibm_watson::{
+    /// #     auth::IamAuthenticator,
+    /// #     tts::{voices::WatsonVoice, TextToSpeech,
+    /// #     customisations::Word},
+    /// # };
+    /// # async fn foo()-> Result<(), Box<dyn std::error::Error>> {
+    /// # let auth = IamAuthenticator::new("api_key").await?;
+    /// # let tts = TextToSpeech::new(&auth, "service_url");
+    /// let word = Word {
+    ///     word: String::default(),
+    ///     translation: String::default(),
+    ///     part_of_speech: Option::default()
+    /// };
+    /// let mut words = vec![];
+    /// words.push(word);
+    /// if let Ok(_) = tts.add_custom_words("word", &words).await {
+    ///     println!("word(s) added!");
+    /// }
+    /// # Ok(())
+    /// # }
+    /// ```
+    /// # Return value
+    /// `()` if the words were added successfully
+    /// [`AddWordError`] - if there was an error in adding the word
+    ///
+    /// [`model`]: crate::tts::customisations::Model
+    /// [`Words`]: self::Word
+    /// [`AddWordError`]: super::errors::AddWordError
     pub async fn add_custom_words(
         &self,
         customisation_id: impl AsRef<str>,

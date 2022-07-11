@@ -18,6 +18,29 @@ pub struct TextToSpeech<'a> {
 }
 
 impl<'a> TextToSpeech<'a> {
+    /// Create a new Text To Speech instance. This instance will be used to make all the requests
+    /// to the text to speech service.
+    ///
+    /// # Parameters
+    /// * `authenticator` - The [`IamAuthenticator`] containing your IAM Access Token
+    /// * `service_url` - The endpoint for your text to speech instance. All Text To Speech
+    /// requests will be made to this endpoint
+    ///
+    /// # Examples
+    /// ``` no_run
+    /// # use ibm_watson::{
+    /// #     auth::IamAuthenticator,
+    /// #     tts::{voices::WatsonVoice, TextToSpeech},
+    /// # };
+    /// # async fn foo()-> Result<(), Box<dyn std::error::Error>> {
+    /// let auth = IamAuthenticator::new("api_key").await?;
+    /// let tts = TextToSpeech::new(&auth, "service_url");
+    /// let voice = tts.get_voice(WatsonVoice::EnGbCharlotteV3, None).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// [`IamAuthenticator`]: super::auth::IamAuthenticator
     pub fn new(authenticator: &'a IamAuthenticator, service_url: &'a str) -> Self {
         let ac = authenticator.token_response();
         let access_token = ac.access_token();
@@ -35,6 +58,28 @@ impl<'a> TextToSpeech<'a> {
         }
     }
 
+    /// Change the default voice to use for Text To Speech requests
+    ///
+    /// # Parameters
+    ///
+    /// * `voice` - Use this [`voice`] in place of the [`default`] one
+    ///
+    /// # Examples
+    /// ``` no_run
+    /// # use ibm_watson::{
+    /// #     auth::IamAuthenticator,
+    /// #     tts::{voices::WatsonVoice, TextToSpeech},
+    /// # };
+    /// # async fn foo()-> Result<(), Box<dyn std::error::Error>> {
+    /// # let auth = IamAuthenticator::new("api_key").await?;
+    /// let mut tts = TextToSpeech::new(&auth, "service_url");
+    /// tts.set_voice(WatsonVoice::EnGbCharlotteV3);
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// [`voice`]: self::voices::WatsonVoice
+    /// [`default`]: self::voices::WatsonVoice::EnUsMichaelV3
     pub fn set_voice(&mut self, voice: WatsonVoice) {
         self.voice = voice;
     }
