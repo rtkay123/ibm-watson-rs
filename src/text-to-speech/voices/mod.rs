@@ -1,7 +1,7 @@
 use hyper::{
     body::Buf,
     header::{HeaderValue, AUTHORIZATION},
-    Body, Client, Method, Request, StatusCode,
+    Body, Method, Request, StatusCode,
 };
 use serde::{Deserialize, Serialize};
 
@@ -12,7 +12,7 @@ use crate::tts::voices::errors::GetVoiceError;
 
 use self::errors::ListVoicesError;
 
-use super::{customisations::CustomModel, TextToSpeech};
+use super::{customisations::Model, TextToSpeech};
 #[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize)]
 pub struct Voice {
     #[serde(rename = "url")]
@@ -30,7 +30,7 @@ pub struct Voice {
     #[serde(rename = "supported_features")]
     pub supported_features: Box<SupportedFeatures>,
     #[serde(rename = "customization", skip_serializing_if = "Option::is_none")]
-    pub customisation: Option<Box<CustomModel>>,
+    pub customisation: Option<Box<Model>>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Default, Serialize, Deserialize)]
@@ -194,12 +194,7 @@ impl TextToSpeech<'_> {
             .method(Method::GET)
             .body(Body::empty())
             .map_err(|e| ListVoicesError::ConnectionError(e.to_string()))?;
-        let https = hyper_rustls::HttpsConnectorBuilder::new()
-            .with_native_roots()
-            .https_only()
-            .enable_http1()
-            .build();
-        let client = Client::builder().build(https);
+        let client = self.get_client();
         let response = client
             .request(req)
             .await

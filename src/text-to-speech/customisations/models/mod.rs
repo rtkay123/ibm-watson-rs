@@ -3,25 +3,24 @@ use std::borrow::Cow;
 use bytes::Buf;
 use hyper::{
     header::{HeaderValue, AUTHORIZATION, CONTENT_TYPE},
-    Body, Client, Method, Request, StatusCode,
+    Body, Method, Request, StatusCode,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use url::Url;
 
-use crate::tts::{
-    customisations::errors::{ListModelError, UpdateModelError},
-    TextToSpeech,
-};
+use crate::tts::TextToSpeech;
 
-use self::errors::{CreateModelError, DeleteModelError, GetModelError};
+use self::errors::{
+    CreateModelError, DeleteModelError, GetModelError, ListModelError, UpdateModelError,
+};
 
 use super::{prompts::Prompt, words::Word};
 
 pub mod errors;
 
 #[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize)]
-pub struct CustomModel {
+pub struct Model {
     /// the customization id (guid) of the custom model. the create a custom model method returns only this field. it does not not return the other fields of this object.
     #[serde(rename = "customization_id")]
     pub customisation_id: String,
@@ -108,7 +107,7 @@ impl TextToSpeech<'_> {
         name: impl AsRef<str>,
         language: Option<Language>,
         description: Option<impl AsRef<str>>,
-    ) -> Result<CustomModel, CreateModelError> {
+    ) -> Result<Model, CreateModelError> {
         let mut url = Url::parse(self.service_url).unwrap();
         url.set_path("v1/customizations");
         #[derive(Serialize, Deserialize)]
@@ -138,12 +137,7 @@ impl TextToSpeech<'_> {
             .method(Method::POST)
             .body(Body::from(form_body.to_string()))
             .map_err(|e| CreateModelError::ConnectionError(e.to_string()))?;
-        let https = hyper_rustls::HttpsConnectorBuilder::new()
-            .with_native_roots()
-            .https_only()
-            .enable_http1()
-            .build();
-        let client = Client::builder().build(https);
+        let client = self.get_client();
         let response = client
             .request(req)
             .await
@@ -151,7 +145,7 @@ impl TextToSpeech<'_> {
         match response.status() {
             StatusCode::OK => {
                 let body = hyper::body::aggregate(response).await.unwrap();
-                let root: CustomModel = serde_json::from_reader(body.reader()).unwrap();
+                let root: Model = serde_json::from_reader(body.reader()).unwrap();
                 Ok(root)
             }
             StatusCode::BAD_REQUEST => Err(CreateModelError::BadRequest400),
@@ -166,7 +160,7 @@ impl TextToSpeech<'_> {
     pub async fn list_custom_models(
         &self,
         language: Option<Language>,
-    ) -> Result<Vec<CustomModel>, ListModelError> {
+    ) -> Result<Vec<Model>, ListModelError> {
         let mut url = Url::parse(self.service_url).unwrap();
         url.set_path("v1/customizations");
         url.set_query(Some(&language.unwrap_or_default().id()));
@@ -189,7 +183,7 @@ impl TextToSpeech<'_> {
                 let body = hyper::body::aggregate(response).await.unwrap();
                 #[derive(Deserialize, Serialize)]
                 struct Root {
-                    customizations: Vec<CustomModel>,
+                    customizations: Vec<Model>,
                 }
                 let root: Root = serde_json::from_reader(body.reader()).unwrap();
                 Ok(root.customizations)
@@ -267,7 +261,7 @@ impl TextToSpeech<'_> {
     pub async fn get_custom_model(
         &self,
         customisation_id: impl AsRef<str>,
-    ) -> Result<CustomModel, GetModelError> {
+    ) -> Result<Model, GetModelError> {
         let mut url = Url::parse(self.service_url).unwrap();
         url.set_path(&format!("v1/customizations/{}", customisation_id.as_ref()));
         let req = Request::builder()
@@ -287,7 +281,7 @@ impl TextToSpeech<'_> {
         match response.status() {
             StatusCode::OK => {
                 let body = hyper::body::aggregate(response).await.unwrap();
-                let root: CustomModel = serde_json::from_reader(body.reader()).unwrap();
+                let root: Model = serde_json::from_reader(body.reader()).unwrap();
                 Ok(root)
             }
             StatusCode::BAD_REQUEST => Err(GetModelError::BadRequest400(

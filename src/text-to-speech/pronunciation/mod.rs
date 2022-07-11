@@ -1,7 +1,7 @@
 use bytes::Buf;
 use hyper::{
     header::{HeaderValue, AUTHORIZATION},
-    Body, Client, Method, Request, StatusCode,
+    Body, Method, Request, StatusCode,
 };
 use serde::{Deserialize, Serialize};
 use url::Url;
