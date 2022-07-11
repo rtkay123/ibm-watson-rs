@@ -65,12 +65,7 @@ impl TextToSpeech<'_> {
             .method(Method::GET)
             .body(Body::empty())
             .map_err(|e| PronunciationError::ConnectionError(e.to_string()))?;
-        let https = hyper_rustls::HttpsConnectorBuilder::new()
-            .with_native_roots()
-            .https_only()
-            .enable_http1()
-            .build();
-        let client = Client::builder().build(https);
+        let client = self.get_client();
         let response = client
             .request(req)
             .await
