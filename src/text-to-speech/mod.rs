@@ -8,23 +8,28 @@ pub mod custom_models;
 pub mod custom_prompts;
 #[path = "custom-words/mod.rs"]
 pub mod custom_words;
+pub mod synthesis;
 pub mod voices;
 
 pub struct TextToSpeech<'a> {
     access_token: &'a str,
-    service_url: String,
+    service_url: &'a str,
     voice: WatsonVoice,
 }
 
 impl<'a> TextToSpeech<'a> {
-    pub fn new(authenticator: &'a IamAuthenticator, service_url: impl Into<String>) -> Self {
+    pub fn new(authenticator: &'a IamAuthenticator, service_url: &'a str) -> Self {
         let ac = authenticator.token_response();
         let access_token = ac.access_token();
-        let service_url = service_url.into();
+
         Self {
             access_token,
             service_url,
             voice: WatsonVoice::default(),
         }
+    }
+
+    pub fn set_voice(&mut self, voice: WatsonVoice) {
+        self.voice = voice;
     }
 }

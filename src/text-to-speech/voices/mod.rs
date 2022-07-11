@@ -180,7 +180,7 @@ impl WatsonVoice {
 
 impl TextToSpeech<'_> {
     pub async fn list_voices(&self) -> Result<Vec<Voice>, ListVoicesError> {
-        let mut url = Url::parse(&self.service_url).unwrap();
+        let mut url = Url::parse(self.service_url).unwrap();
         Self::set_voices_path(&mut url);
         let req = Request::builder()
             .uri(url.to_string())
@@ -231,7 +231,7 @@ impl TextToSpeech<'_> {
         voice: WatsonVoice,
         customisation_id: Option<&str>,
     ) -> Result<Voice, GetVoiceError> {
-        let mut url = Url::parse(&self.service_url).unwrap();
+        let mut url = Url::parse(self.service_url).unwrap();
         Self::set_voices_path(&mut url);
         url.set_query(customisation_id);
         let req = Request::builder()

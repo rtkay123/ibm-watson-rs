@@ -1,3 +1,5 @@
+use std::{fs::File, io::Write};
+
 use ibm_watson::{
     auth::IamAuthenticator,
     tts::{voices::WatsonVoice, TextToSpeech},
@@ -21,9 +23,12 @@ struct Args {
 async fn main() {
     let args = Args::parse();
     let auth = IamAuthenticator::new(args.api_key).await.unwrap();
-    let tts = TextToSpeech::new(&auth, args.service_url);
+    let tts = TextToSpeech::new(&auth, &args.service_url);
     let voices = tts.list_voices().await.unwrap();
     println!("{:#?}", voices);
     let voice = tts.get_voice(WatsonVoice::EnGbKateV3, None).await.unwrap();
     println!("{:#?}", voice);
+    let synth = tts.synthesise("Hello world", None, None).await.unwrap();
+    let mut file = File::create("file.ogg").unwrap();
+    file.write_all(&synth).unwrap();
 }
