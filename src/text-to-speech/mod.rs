@@ -8,6 +8,7 @@ pub mod custom_models;
 pub mod custom_prompts;
 #[path = "custom-words/mod.rs"]
 pub mod custom_words;
+pub mod pronunciation;
 pub mod synthesis;
 pub mod voices;
 

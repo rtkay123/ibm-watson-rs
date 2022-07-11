@@ -204,6 +204,8 @@ impl TextToSpeech<'_> {
             StatusCode::UNSUPPORTED_MEDIA_TYPE => Err(SynthesisError::UnsupportedMediaType415),
             StatusCode::INTERNAL_SERVER_ERROR => Err(SynthesisError::InternalServerError500),
             StatusCode::SERVICE_UNAVAILABLE => Err(SynthesisError::ServiceUnavailable500),
+            StatusCode::BAD_REQUEST => Err(SynthesisError::BadRequest400),
+            StatusCode::NOT_FOUND => Err(SynthesisError::NotFound404),
             _ => {
                 unreachable!()
             }
