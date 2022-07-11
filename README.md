@@ -1,6 +1,4 @@
-<h1 style="text-align: center">
-IBM Watson
-</h1>
+<h1 style="text-align: center">IBM Watson</h1>
 <p style="text-align: center"> A safe wrapper for IBM Watson's API
 </p>
 
@@ -37,9 +35,9 @@ synthesises some sample text.
 
 This crate is licensed under either of:
 
-- Apache License, Version 2.0 (`LICENSE-APACHE <LICENSE-APACHE>`_ or
+- Apache License, Version 2.0 [`LICENSE-APACHE`](LICENSE-APACHE) or
   http://www.apache.org/licenses/LICENSE-2.0)
-- MIT license (`LICENSE-MIT <LICENSE-MIT>`_) or
+- MIT license [`LICENSE-MIT`](LICENSE-MIT) or
   http://opensource.org/licenses/MIT) at your option.
 
 # Contribution
