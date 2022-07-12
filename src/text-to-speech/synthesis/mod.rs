@@ -3,6 +3,7 @@ use std::borrow::Cow;
 pub mod errors;
 
 use reqwest::{Method, Request, StatusCode, Url};
+use url::form_urlencoded::byte_serialize;
 
 use self::errors::SynthesisError;
 

@@ -323,7 +323,9 @@ impl TextToSpeech<'_> {
         customisation_id: Option<&str>,
     ) -> Result<Voice, GetVoiceError> {
         let mut url = Url::parse(self.service_url).unwrap();
+        let id = voice.id();
         Self::set_voices_path(&mut url);
+        let mut url = Url::parse(&format!("{}/{}", url, id)).unwrap();
         url.set_query(customisation_id);
         let req = Request::new(Method::GET, url);
         let client = self.get_client();

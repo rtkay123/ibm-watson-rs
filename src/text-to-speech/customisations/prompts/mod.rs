@@ -1,4 +1,4 @@
-use std::{borrow::Cow, path::Path};
+use std::path::Path;
 
 use reqwest::{
     header::{HeaderValue, CONTENT_TYPE},
@@ -146,20 +146,60 @@ impl TextToSpeech<'_> {
     }
 
     /// Adds a custom prompt to a custom model. A prompt is defined by the text that is to be spoken, the audio for that text, a unique user-specified ID for the prompt, and an optional speaker ID. The information is used to generate prosodic data that is not visible to the user. This data is used by the service to produce the synthesized audio upon request. You must use credentials for the instance of the service that owns a custom model to add a prompt to it. You can add a maximum of 1000 custom prompts to a single custom model
+    ///
+    /// # Parameters
+    ///
+    /// * `customisation_id` - The customization ID (GUID) of the custom model. You must make the request with credentials for the instance of the service that owns the custom model
+    /// * `prompt` - The prompt that is to be added to the custom model
+    /// * `audio_file` - An audio file that speaks the text of the prompt with intonation and prosody that matches how you would like the prompt to be spoken
+    ///     * The prompt audio must be in WAV format and must have a minimum sampling rate of 16 kHz. The service accepts audio with higher sampling rates. The service transcodes all audio to 16 kHz before processing it
+    ///     * The length of the prompt audio is limited to 30 seconds
+    ///
+    /// # Example
+    /// ``` no_run
+    /// # use ibm_watson::{
+    /// #     auth::IamAuthenticator,
+    /// #     tts::{voices::WatsonVoice, TextToSpeech,
+    /// #     customisations::Prompt},
+    /// # };
+    /// # async fn foo()-> Result<(), Box<dyn std::error::Error>> {
+    /// # let auth = IamAuthenticator::new("api_key").await?;
+    /// # let tts = TextToSpeech::new(&auth, "service_url");
+    /// let file_path = std::path::Path::new("/home/user/audio.wav");
+    /// let prompt = Prompt {
+    ///     prompt: String::from("foo"),
+    ///     prompt_id: String::from("bar"),
+    ///     ..Default::default()
+    /// };
+    /// let _ = tts.add_custom_prompt("cust-id", &prompt, &file_path).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// [`model`]: crate::tts::customisations::Model
+    /// [`prompt ID`]: crate::tts::customisations::Prompt::prompt_id
+    /// [`prompt text`]: crate::tts::customisations::Prompt::prompt
+    /// [`status`]: crate::tts::customisations::Prompt::status
+    /// [`speaker ID`]: crate::tts::customisations::Prompt::speaker_id
+    /// [`get_custom_model()`]: crate::tts::TextToSpeech::get_custom_model()
+    /// [`language`]: crate::tts::customisations::Model::language
+    /// [`owner`]: crate::tts::customisations::Model::owner
+    /// [`custom words`]: crate::tts::customisations::Model::words
+    ///
     pub async fn add_custom_prompt(
         &self,
         customisation_id: impl AsRef<str>,
         prompt: &Prompt,
         audio_file: impl AsRef<Path>,
-    ) -> Result<(), AddPromptError> {
+    ) -> Result<Prompt, AddPromptError> {
         let audio_file = audio_file.as_ref().to_owned();
         let name = audio_file.clone();
         let f_name = name.file_name();
-        let file_name = f_name.ok_or(AddPromptError::FileReadError(
-            "Could not read file".to_owned(),
-        ))?;
+        let file_name = f_name
+            .ok_or_else(|| AddPromptError::FileReadError("Could not read file".to_owned()))?;
 
         let file_name = file_name.to_string_lossy();
+        let file_name = file_name.to_string();
         let file = tokio::fs::OpenOptions::new()
             .read(true)
             .open(&audio_file)
@@ -167,7 +207,10 @@ impl TextToSpeech<'_> {
             .map_err(|e| AddPromptError::FileReadError(e.to_string()))?;
         let mut buf_reader = BufReader::new(file);
         let mut buffer = Vec::new();
-        buf_reader.read_to_end(&mut buffer);
+        buf_reader
+            .read_to_end(&mut buffer)
+            .await
+            .map_err(|e| AddPromptError::FileReadError(e.to_string()))?;
 
         let mut url = Url::parse(self.service_url).unwrap();
         url.set_path(&format!(
@@ -196,7 +239,16 @@ impl TextToSpeech<'_> {
             .send()
             .await
             .unwrap();
-        match response.status() {}
-        todo!()
+        match response.status() {
+            StatusCode::CREATED => Ok(response.json().await.unwrap()),
+            StatusCode::BAD_REQUEST => Err(AddPromptError::BadRequest400),
+            StatusCode::UNAUTHORIZED => Err(AddPromptError::Unauthorised401(
+                customisation_id.as_ref().to_string(),
+            )),
+            StatusCode::UNSUPPORTED_MEDIA_TYPE => Err(AddPromptError::UnsupportedMediaType415),
+            StatusCode::INTERNAL_SERVER_ERROR => Err(AddPromptError::InternalServerError500),
+            StatusCode::SERVICE_UNAVAILABLE => Err(AddPromptError::ServiceUnavailable503),
+            _ => unreachable!(),
+        }
     }
 }

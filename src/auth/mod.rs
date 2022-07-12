@@ -72,7 +72,7 @@ impl IamAuthenticator {
     /// # Example
     /// ``` no_run
     /// # use ibm_watson::auth::IamAuthenticator;
-    /// # async fn main()-> Result<(), Box<dyn std::error::Error>> {
+    /// # async fn foo()-> Result<(), Box<dyn std::error::Error>> {
     /// let auth = IamAuthenticator::new("api_key").await?;
     /// # Ok(())
     /// # }

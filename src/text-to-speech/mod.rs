@@ -14,7 +14,6 @@ pub mod voices;
 
 /// Creates a client used to send requests to your Text To Speech endpoint
 pub struct TextToSpeech<'a> {
-    access_token: &'a str,
     service_url: &'a str,
     voice: WatsonVoice,
     client: Client,
@@ -45,19 +44,16 @@ impl<'a> TextToSpeech<'a> {
     ///
     /// [`IamAuthenticator`]: super::auth::IamAuthenticator
     pub fn new(authenticator: &'a IamAuthenticator, service_url: &'a str) -> Self {
-        let ac = authenticator.token_response();
-        let access_token = ac.access_token();
         let client = ClientBuilder::new();
         let default_headers = Self::default_headers(authenticator.token_response().access_token());
-        client.default_headers(default_headers);
+        let client = client.default_headers(default_headers);
 
         #[cfg(feature = "http2")]
-        client.http2_prior_knowledge();
+        let client = client.http2_prior_knowledge();
 
         let client = client.build().unwrap();
 
         Self {
-            access_token,
             service_url,
             voice: WatsonVoice::default(),
             client,
@@ -96,7 +92,7 @@ impl<'a> TextToSpeech<'a> {
 
     fn default_headers(token: &str) -> HeaderMap<HeaderValue> {
         let mut headers = HeaderMap::new();
-        let mut auth_value = HeaderValue::from_static(&format!("Bearer {}", token));
+        let mut auth_value = HeaderValue::from_str(&format!("Bearer {}", token)).unwrap();
         auth_value.set_sensitive(true);
         headers.insert(AUTHORIZATION, auth_value);
         headers
