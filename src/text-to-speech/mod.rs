@@ -10,6 +10,7 @@ pub mod pronunciation;
 pub mod synthesis;
 pub mod voices;
 
+/// Creates a client used to send requests to your Text To Speech endpoint
 pub struct TextToSpeech<'a> {
     access_token: &'a str,
     service_url: &'a str,

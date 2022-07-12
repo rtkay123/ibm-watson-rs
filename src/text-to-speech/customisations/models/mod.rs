@@ -18,6 +18,7 @@ use super::{
 };
 
 #[derive(Clone, Debug, PartialEq, Eq, Default, Serialize, Deserialize)]
+/// Defines a custom model
 pub struct Model {
     /// the customization id (guid) of the custom model. the create a custom model method returns only this field. it does not not return the other fields of this object.
     #[serde(rename = "customization_id")]
@@ -50,30 +51,51 @@ pub struct Model {
 
 #[non_exhaustive]
 #[derive(Default)]
+/// The language of the new custom model
 pub enum Language {
+    /// Arabic
     ArMs,
+    /// Czech (Czechia)
     CsCz,
+    /// German (Germany)
     DeDe,
+    /// English (Australia)
     EnAu,
+    /// English (United Kingdom)
     EnGb,
     #[default]
+    /// English (United States)
     EnUs,
+    /// Spanish (Spain)
     EsEs,
+    /// Spanish (Latin America)
     EsLa,
+    /// Spanish (United States)
     EsUs,
+    /// French (Canada)
     FrCa,
+    /// French (France)
     FrFr,
+    /// Italian (Italy)
     ItIt,
+    /// Japanese (Japan)
     JaJp,
+    /// Koren (South Korea)
     KoKr,
+    /// Dutch (Belgium)
     NlBe,
+    /// Dutch (Netherlands)
     NlNl,
+    /// Portuguese (Brazil)
     PtBr,
+    /// Swedish (Sweden)
     SvSe,
+    /// Chinese (PRC)
     ZhCn,
 }
 
 impl Language {
+    /// The value that the server expects for a particular language
     pub fn id(&self) -> Cow<'static, str> {
         match self {
             Language::ArMs => Cow::from("ar-MS"),
@@ -100,6 +122,30 @@ impl Language {
 }
 
 impl TextToSpeech<'_> {
+    /// Creates a new empty custom model. You must specify a name for the new custom model. You can optionally specify the language and a description for the new model. The model is owned by the instance of the service whose credentials are used to create it
+    ///
+    /// # Parameters
+    ///
+    /// * `name` - The name of the new custom model
+    /// * `language` - The language of the new custom model. You create a custom model for a specific language, not for a specific voice. A custom model can be used with any voice for its specified language. If [`None`] is specified, the [`default language`] is used
+    /// * `description` - A description of the new custom model. Specifying a description is recommended
+    ///
+    /// # Example
+    /// ``` no_run
+    /// # use ibm_watson::{
+    /// #     auth::IamAuthenticator,
+    /// #     tts::{voices::WatsonVoice, TextToSpeech},
+    /// # };
+    /// # async fn foo()-> Result<(), Box<dyn std::error::Error>> {
+    /// # let auth = IamAuthenticator::new("api_key").await?;
+    /// # let tts = TextToSpeech::new(&auth, "service_url");
+    /// let model = tts.create_custom_model("new model", None, Some("example")).await?;
+    /// println!("model: {:#?}", model);
+    /// # Ok(())
+    /// # }
+    /// ```
+    /// [`None`]: std::option::Option::None
+    /// [`default language`]: self::Language::EnUs
     pub async fn create_custom_model(
         &self,
         name: impl AsRef<str>,
@@ -155,6 +201,29 @@ impl TextToSpeech<'_> {
         }
     }
 
+    /// Lists metadata such as the name and description for all custom models that are owned by an instance of the service. Specify a [`language`] to list the custom models for that language only. To see the words and prompts in addition to the metadata for a specific custom model, use [`get_custom_model()`]. You must use credentials for the instance of the service that owns a model to list information about it.
+    ///
+    /// # Parameters
+    ///
+    /// * `language` - The language for which custom models that are owned by the requesting credentials are to be returned. Pass [`None`] to see all custom models that are owned by the requester
+    ///
+    /// # Example
+    /// ``` no_run
+    /// # use ibm_watson::{
+    /// #     auth::IamAuthenticator,
+    /// #     tts::{voices::WatsonVoice, TextToSpeech},
+    /// # };
+    /// # async fn foo()-> Result<(), Box<dyn std::error::Error>> {
+    /// # let auth = IamAuthenticator::new("api_key").await?;
+    /// # let tts = TextToSpeech::new(&auth, "service_url");
+    /// let models = tts.list_custom_models(None).await?;
+    /// println!("found: {:#?} models", models.len());
+    /// # Ok(())
+    /// # }
+    /// ```
+    /// [`None`]: std::option::Option::None
+    /// [`language`]: self::Language
+    /// [`get_custom_model()`]: Self::get_custom_model()
     pub async fn list_custom_models(
         &self,
         language: Option<Language>,
@@ -195,6 +264,36 @@ impl TextToSpeech<'_> {
         }
     }
 
+    /// Updates information for the specified custom model. You can update metadata such as the
+    /// name and description of the model. You can also update the words in the model and their
+    /// translations. Adding a new translation for a word that already exists in a custom model
+    /// overwrites the word's existing translation. A custom model can contain no more than 20,000
+    /// entries. You must use credentials for the instance of the service that owns a model to
+    /// update it
+    ///
+    /// # Parameters
+    ///
+    /// * `customisation_id` - The customization ID (GUID) of the custom model. You must make the request with credentials for the instance of the service that owns the custom model
+    /// * `name` - A new [`name`] for the custom model
+    /// * `description` - A new [`description`] for the custom model
+    /// * `words` - An array of [`Word`] objects that provides the words and their translations that are to be added or updated for the custom model. Pass an empty array to make no additions or updates
+    ///
+    /// # Example
+    /// ``` no_run
+    /// # use ibm_watson::{
+    /// #     auth::IamAuthenticator,
+    /// #     tts::{voices::WatsonVoice, TextToSpeech},
+    /// # };
+    /// # async fn foo()-> Result<(), Box<dyn std::error::Error>> {
+    /// # let auth = IamAuthenticator::new("api_key").await?;
+    /// # let tts = TextToSpeech::new(&auth, "service_url");
+    /// tts.update_custom_model("cust-id", Some("foo"), None, None).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    /// [`name`]: crate::tts::customisations::Model::name
+    /// [`description`]: crate::tts::customisations::Model::description
+    /// [`Word`]: crate::tts::customisations::Word
     pub async fn update_custom_model(
         &self,
         customisation_id: impl AsRef<str>,
@@ -256,6 +355,28 @@ impl TextToSpeech<'_> {
         }
     }
 
+    /// Gets all information about a specified custom model. In addition to metadata such as the name and description of the custom model, the output includes the words and their translations that are defined for the model, as well as any prompts that are defined for the model. To see just the metadata for a model, use [`list_custom_models()`].
+    ///
+    /// # Parameters
+    ///
+    /// * `customisation_id` - The customization ID (GUID) of the custom model. You must make the request with credentials for the instance of the service that owns the custom model
+    ///
+    /// # Example
+    /// ``` no_run
+    /// # use ibm_watson::{
+    /// #     auth::IamAuthenticator,
+    /// #     tts::{voices::WatsonVoice, TextToSpeech},
+    /// # };
+    /// # async fn foo()-> Result<(), Box<dyn std::error::Error>> {
+    /// # let auth = IamAuthenticator::new("api_key").await?;
+    /// # let tts = TextToSpeech::new(&auth, "service_url");
+    /// let model = tts.get_custom_model("cust-id").await?;
+    /// println!("{:#?}", model);
+    /// # Ok(())
+    /// # }
+    /// ```
+    /// [`language`]: self::Language
+    /// [`list_custom_models()`]: Self::list_custom_models()
     pub async fn get_custom_model(
         &self,
         customisation_id: impl AsRef<str>,
@@ -297,6 +418,29 @@ impl TextToSpeech<'_> {
         }
     }
 
+    /// Deletes the specified custom model. You must use credentials for the instance of the service that owns a model to delete it.
+    ///
+    /// # Parameters
+    ///
+    /// * `customisation_id` - The customization ID (GUID) of the custom model. You must make the request with credentials for the instance of the service that owns the custom model
+    ///
+    /// # Example
+    /// ``` no_run
+    /// # use ibm_watson::{
+    /// #     auth::IamAuthenticator,
+    /// #     tts::{voices::WatsonVoice, TextToSpeech},
+    /// # };
+    /// # async fn foo()-> Result<(), Box<dyn std::error::Error>> {
+    /// # let auth = IamAuthenticator::new("api_key").await?;
+    /// # let tts = TextToSpeech::new(&auth, "service_url");
+    /// if tts.delete_custom_model("cust-id").await.is_ok() {
+    ///     println!("model deleted");
+    /// }
+    /// # Ok(())
+    /// # }
+    /// ```
+    /// [`language`]: self::Language
+    /// [`list_custom_models()`]: Self::list_custom_models()
     pub async fn delete_custom_model(
         &self,
         customisation_id: impl AsRef<str>,

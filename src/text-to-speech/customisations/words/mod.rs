@@ -11,6 +11,9 @@ use crate::tts::TextToSpeech;
 use super::errors::{AddWordError, DeleteWordError, GetWordError, ListWordsError};
 
 #[derive(Clone, Debug, Eq, PartialEq, Default, Serialize, Deserialize)]
+/// Defines words and their translations to be used in custom [`models`]
+///
+/// [`models`]: crate::tts::customisations::Model
 pub struct Word {
     /// the word for the custom model. the maximum length of a word is 49 characters.
     #[serde(rename = "word")]
@@ -54,9 +57,6 @@ impl TextToSpeech<'_> {
     /// # Ok(())
     /// # }
     /// ```
-    /// # Return value
-    /// `()` if the words were added successfully
-    /// [`AddWordError`] - if there was an error in adding the word
     ///
     /// [`model`]: crate::tts::customisations::Model
     /// [`Words`]: self::Word
@@ -109,6 +109,30 @@ impl TextToSpeech<'_> {
         }
     }
 
+    /// Lists all of the words and their translations for the specified custom model. The output shows the translations as they are defined in the model. You must use credentials for the instance of the service that owns a model to list its words
+    ///
+    /// # Parameters
+    ///
+    /// * `customisation_id` -  The customization ID (GUID) of the custom [`model`]. You must make the request with credentials for the instance of the service that owns the custom model
+    ///
+    /// # Example
+    /// ``` no_run
+    /// # use ibm_watson::{
+    /// #     auth::IamAuthenticator,
+    /// #     tts::{voices::WatsonVoice, TextToSpeech,
+    /// #     customisations::Word},
+    /// # };
+    /// # async fn foo()-> Result<(), Box<dyn std::error::Error>> {
+    /// # let auth = IamAuthenticator::new("api_key").await?;
+    /// # let tts = TextToSpeech::new(&auth, "service_url");
+    /// let words = tts.list_custom_words("customisation_id").await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    ///
+    /// [`model`]: crate::tts::customisations::Model
+    /// [`Words`]: self::Word
+    /// [`Error`]: super::errors::ListWordsError
     pub async fn list_custom_words(
         &self,
         customisation_id: impl AsRef<str>,
@@ -151,6 +175,35 @@ impl TextToSpeech<'_> {
         }
     }
 
+    /// Adds a single [`word`] and its translation to the specified custom model. Adding a new translation for a word that already exists in a custom model overwrites the word's existing translation. A custom model can contain no more than 20,000 entries. You must use credentials for the instance of the service that owns a model to add a word to it
+    ///
+    /// # Parameters
+    ///
+    /// * `customisation_id` -  The customization ID (GUID) of the custom [`model`]. You must make the request with credentials for the instance of the service that owns the custom model
+    /// * `word` -  The customization ID (GUID) of the custom [`model`]. You must make the request with credentials for the instance of the service that owns the custom model
+    ///
+    /// # Example
+    /// ``` no_run
+    /// # use ibm_watson::{
+    /// #     auth::IamAuthenticator,
+    /// #     tts::{voices::WatsonVoice, TextToSpeech,
+    /// #     customisations::Word},
+    /// # };
+    /// # async fn foo()-> Result<(), Box<dyn std::error::Error>> {
+    /// # let auth = IamAuthenticator::new("api_key").await?;
+    /// # let tts = TextToSpeech::new(&auth, "service_url");
+    /// let word = Word {
+    ///     word: String::default(),
+    ///     translation: String::default(),
+    ///     part_of_speech: Option::default()
+    /// };
+    /// tts.add_custom_word("customisation_id", &word).await?;
+    /// # Ok(())
+    /// # }
+    /// ```
+    /// [`Words`]: self::Word
+    /// [`word`]: self::Word
+    /// [`model`]: crate::tts::customisations::Model
     pub async fn add_custom_word(
         &self,
         customisation_id: impl AsRef<str>,
@@ -209,6 +262,31 @@ impl TextToSpeech<'_> {
         }
     }
 
+    /// Gets the translation for a single word from the specified custom model. The output shows the translation as it is defined in the model. You must use credentials for the instance of the service that owns a model to list its words.
+    ///
+    /// # Parameters
+    ///
+    /// * `customisation_id` - The customization ID (GUID) of the custom [`model`]. You must make the request with credentials for the instance of the service that owns the custom model
+    /// * `word` - The word that is to be queried from the custom [`model`]
+    ///
+    /// # Example
+    /// ``` no_run
+    /// # use ibm_watson::{
+    /// #     auth::IamAuthenticator,
+    /// #     tts::{voices::WatsonVoice, TextToSpeech,
+    /// #     customisations::Word},
+    /// # };
+    /// # async fn foo()-> Result<(), Box<dyn std::error::Error>> {
+    /// # let auth = IamAuthenticator::new("api_key").await?;
+    /// # let tts = TextToSpeech::new(&auth, "service_url");
+    /// let word = tts.get_custom_word("customisation_id", "foo").await?;
+    /// println!("{:#?}", word);
+    /// # Ok(())
+    /// # }
+    /// ```
+    /// [`Words`]: self::Word
+    /// [`word`]: self::Word
+    /// [`model`]: crate::tts::customisations::Model
     pub async fn get_custom_word(
         &self,
         customisation_id: impl AsRef<str>,
@@ -252,6 +330,31 @@ impl TextToSpeech<'_> {
         }
     }
 
+    /// Deletes a single word from the specified custom model. You must use credentials for the instance of the service that owns a model to delete its words.
+    /// # Parameters
+    ///
+    /// * `customisation_id` - The customization ID (GUID) of the custom [`model`]. You must make the request with credentials for the instance of the service that owns the custom model
+    /// * `word` - The word that is to be queried from the custom [`model`]
+    ///
+    /// # Example
+    /// ``` no_run
+    /// # use ibm_watson::{
+    /// #     auth::IamAuthenticator,
+    /// #     tts::{voices::WatsonVoice, TextToSpeech,
+    /// #     customisations::Word},
+    /// # };
+    /// # async fn foo()-> Result<(), Box<dyn std::error::Error>> {
+    /// # let auth = IamAuthenticator::new("api_key").await?;
+    /// # let tts = TextToSpeech::new(&auth, "service_url");
+    /// if tts.delete_custom_word("customisation_id", "foo").await.is_ok() {
+    ///     println!("word deleted");
+    /// }
+    /// # Ok(())
+    /// # }
+    /// ```
+    /// [`Words`]: self::Word
+    /// [`word`]: self::Word
+    /// [`model`]: crate::tts::customisations::Model
     pub async fn delete_custom_word(
         &self,
         customisation_id: impl AsRef<str>,

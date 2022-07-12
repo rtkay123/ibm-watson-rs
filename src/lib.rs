@@ -35,24 +35,37 @@
 //! This crate is licensed under either of:
 //!
 //! - Apache License, Version 2.0 [`LICENSE-APACHE`](LICENSE-APACHE) or
-//!   http://www.apache.org/licenses/LICENSE-2.0)
+//!   `<http://www.apache.org/licenses/LICENSE-2.0)>`
 //! - MIT license [`LICENSE-MIT`](LICENSE-MIT) or
-//!   http://opensource.org/licenses/MIT) at your option.
+//!   `<http://opensource.org/licenses/MIT)>` at your option.
 //!
 //! # Contribution
 //!
 //! Unless you explicitly state otherwise, any contribution intentionally submitted
 //! for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
 //! dual licensed as above, without any additional terms or conditions.
-#[warn(
+#[deny(
     missing_debug_implementations,
     missing_docs,
     rustdoc::broken_intra_doc_links,
    // unreachable_pub,
-    rustdoc::missing_doc_code_examples
+//    rustdoc::missing_doc_code_examples
 )]
 
 /// Retrieve an IAM access token to use for authentication with your IBM Watson services
+///
+/// # Example
+///
+/// ``` no_run
+/// # use ibm_watson::{
+/// #     auth::IamAuthenticator,
+/// #     tts::{voices::WatsonVoice, TextToSpeech},
+/// # };
+/// # async fn foo()-> Result<(), Box<dyn std::error::Error>> {
+/// let auth = IamAuthenticator::new("api_key").await?;
+/// # Ok(())
+/// # }
+/// ```
 pub mod auth;
 /// Interact with the IBM Watson™ Text to Speech service
 #[cfg(feature = "tts")]

@@ -62,6 +62,19 @@ pub struct IamAuthenticator {
 
 impl IamAuthenticator {
     /// Get an IAM Access token from an API key
+    ///
+    /// # Parameters
+    ///
+    /// * `api_key` - The API key for your Watson service
+    ///
+    /// # Example
+    /// ``` no_run
+    /// # use ibm_watson::auth::IamAuthenticator;
+    /// # async fn main()-> Result<(), Box<dyn std::error::Error>> {
+    /// let auth = IamAuthenticator::new("api_key").await?;
+    /// # Ok(())
+    /// # }
+    /// ```
     pub async fn new(api_key: impl AsRef<str>) -> Result<Self, AuthenticationError> {
         let url = Url::parse(AUTH_URL).unwrap();
         let req = Request::builder()

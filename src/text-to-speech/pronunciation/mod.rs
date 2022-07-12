@@ -11,19 +11,31 @@ use self::errors::PronunciationError;
 
 use super::{voices::WatsonVoice, TextToSpeech};
 #[derive(Clone, Debug, PartialEq, Eq, Default, Serialize, Deserialize)]
+/// Holds the pronunciation of some text
 pub struct Pronunciation {
     #[serde(rename = "pronunciation")]
+    /// The pronunciation of the specified text in the requested [`voice`] and [`format`]. If a custom [`model`] is specified, the pronunciation also reflects that custom model
+    ///
+    /// [`voice`]: super::voices::WatsonVoice
+    /// [`format`]: self::PhonemeFormat
+    /// [`model`]: crate::tts::customisations::Model
     pub pronunciation: String,
 }
 
 #[derive(Clone, Copy, Debug, Default)]
+/// The phoneme format in which to return the pronunciation. The Arabic, Chinese, Dutch, Australian English, and Korean languages support only IPA
 pub enum PhonemeFormat {
+    /// ibm
     IBM,
     #[default]
+    /// ipa
     IPA,
 }
 
 impl PhonemeFormat {
+    /// The value that the server expects for [`PhonemeFormat`]
+    ///
+    /// [`PhonemeFormat`]: Self
     pub fn id(&self) -> &str {
         match self {
             PhonemeFormat::IBM => "ibm",
@@ -63,7 +75,7 @@ impl TextToSpeech<'_> {
     /// [`default`]: super::voices::WatsonVoice::EnUsMichaelV3
     /// [`PhonemeFormat`]: self::PhonemeFormat
     /// [`format`]: self::PhonemeFormat
-    /// [`model`]: self::customisations::Model
+    /// [`model`]: crate::tts::customisations::Model
     /// [`Pronunciation`]: self::Pronunciation
     pub async fn get_pronunciation(
         &self,

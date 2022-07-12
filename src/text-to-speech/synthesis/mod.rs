@@ -49,6 +49,9 @@ pub enum AudioFormat {
 }
 
 impl Default for AudioFormat {
+    /// The default audio format: [`AudioOggCodecsOpus`]
+    ///
+    /// [`AudioOggCodecsOpus`]: Self::AudioOggCodecsOpus
     fn default() -> Self {
         AudioFormat::AudioOggCodecsOpus {
             sample_rate: Some(48000),
@@ -57,6 +60,7 @@ impl Default for AudioFormat {
 }
 
 impl AudioFormat {
+    /// The value that the server expects for a particular format
     pub fn id(&self) -> Cow<'static, str> {
         match &self {
             AudioFormat::AudioAlaw { sample_rate } => {

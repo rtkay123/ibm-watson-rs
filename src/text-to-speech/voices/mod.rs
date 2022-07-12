@@ -14,7 +14,7 @@ use crate::tts::voices::errors::GetVoiceError;
 use self::errors::ListVoicesError;
 
 use super::{customisations::Model, TextToSpeech};
-#[derive(Clone, Debug, PartialEq, Default, Serialize, Deserialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Default, Serialize, Deserialize)]
 /// Voices available for use in Watson
 pub struct Voice {
     #[serde(rename = "url")]
@@ -56,8 +56,9 @@ pub struct SupportedFeatures {
 
 #[derive(Default)]
 #[non_exhaustive]
+/// All voices that Watson can use
 pub enum WatsonVoice {
-    /// Arabic
+    /// Arabic - Omar
     ArMsOmar,
     /// Alena - Czech (Czechia)
     CsCzAlena,
@@ -141,49 +142,51 @@ pub enum WatsonVoice {
 }
 
 impl ToString for WatsonVoice {
+    /// The human readable format for Watson Voices
     fn to_string(&self) -> String {
         match &self {
-            WatsonVoice::ArMsOmar => todo!(),
-            WatsonVoice::CsCzAlena => todo!(),
-            WatsonVoice::DeDeBirgitV3 => todo!(),
-            WatsonVoice::DeDeDieterV3 => todo!(),
-            WatsonVoice::DeDeErikaV3 => todo!(),
-            WatsonVoice::EnAuCraig => todo!(),
-            WatsonVoice::EnAuMadison => todo!(),
-            WatsonVoice::EnAuSteve => todo!(),
-            WatsonVoice::EnGbCharlotteV3 => todo!(),
-            WatsonVoice::EnGbJamesV3 => todo!(),
-            WatsonVoice::EnGbKateV3 => todo!(),
-            WatsonVoice::EnUsAllisonV3 => todo!(),
-            WatsonVoice::EnUsEmilyV3 => todo!(),
-            WatsonVoice::EnUsHenryV3 => todo!(),
-            WatsonVoice::EnUsKevinV3 => todo!(),
-            WatsonVoice::EnUsLisaV3 => todo!(),
-            WatsonVoice::EnUsMichaelV3 => todo!(),
-            WatsonVoice::EnUsOliviaV3 => todo!(),
-            WatsonVoice::EsEsEnriqueV3 => todo!(),
-            WatsonVoice::EsEsLauraV3 => todo!(),
-            WatsonVoice::EsLaSofiaV3 => todo!(),
-            WatsonVoice::EsUsSofiaV3 => todo!(),
-            WatsonVoice::FrCaLouiseV3 => todo!(),
-            WatsonVoice::FrFrNicolasV3 => todo!(),
-            WatsonVoice::FrFrReneeV3 => todo!(),
-            WatsonVoice::ItItFrancescaV3 => todo!(),
-            WatsonVoice::JaJpEmiV3 => todo!(),
-            WatsonVoice::KoKrHyunjun => todo!(),
-            WatsonVoice::KoKrSiWoo => todo!(),
-            WatsonVoice::KoKrYoungmi => todo!(),
-            WatsonVoice::KoKrYuna => todo!(),
-            WatsonVoice::NlBeAdele => todo!(),
-            WatsonVoice::NlBeBram => todo!(),
-            WatsonVoice::NlNlEmma => todo!(),
-            WatsonVoice::NlNlLiam => todo!(),
-            WatsonVoice::PtBrIsabelaV3 => todo!(),
-            WatsonVoice::SvSeIngrid => todo!(),
-            WatsonVoice::ZhCnLiNa => todo!(),
-            WatsonVoice::ZhCnWangWei => todo!(),
-            WatsonVoice::ZhCnZhangJing => todo!(),
+            WatsonVoice::ArMsOmar => "ArMsOmar",
+            WatsonVoice::CsCzAlena => "Alena - Czech (Czechia)",
+            WatsonVoice::DeDeBirgitV3 => "Birgit - German (Germany)",
+            WatsonVoice::DeDeDieterV3 => "DieterV3 - German (Germany)",
+            WatsonVoice::DeDeErikaV3 => "ErikaV3 - German (Germany)",
+            WatsonVoice::EnAuCraig => "Craig - English (Australia)",
+            WatsonVoice::EnAuMadison => "Madison - English (Australia)",
+            WatsonVoice::EnAuSteve => "Steve - English (Australia)",
+            WatsonVoice::EnGbCharlotteV3 => "CharlotteV3 - English (United Kingdom)",
+            WatsonVoice::EnGbJamesV3 => "JamesV3 - English (United Kingdom)",
+            WatsonVoice::EnGbKateV3 => "KateV3 - English (United Kingdom)",
+            WatsonVoice::EnUsAllisonV3 => "AllisonV3 - English (United States)",
+            WatsonVoice::EnUsEmilyV3 => "EmilyV3 - English (United States)",
+            WatsonVoice::EnUsHenryV3 => "HenryV3 - English (United States)",
+            WatsonVoice::EnUsKevinV3 => "KevinV3 - English (United States)",
+            WatsonVoice::EnUsLisaV3 => "LisaV3 - English (United States)",
+            WatsonVoice::EnUsMichaelV3 => "MichaelV3 - English (United States)",
+            WatsonVoice::EnUsOliviaV3 => "OliviaV3 - English (United States)",
+            WatsonVoice::EsEsEnriqueV3 => "EnriqueV3 - Spanish (Spain)",
+            WatsonVoice::EsEsLauraV3 => "LauraV3 - Spanish (Spain)",
+            WatsonVoice::EsLaSofiaV3 => "SofiaV3 - Spanish (Latin America)",
+            WatsonVoice::EsUsSofiaV3 => "SofiaV3 - Spanish (United States)",
+            WatsonVoice::FrCaLouiseV3 => "LouiseV3 - French (Canada)",
+            WatsonVoice::FrFrNicolasV3 => "NicolasV3 - French (France)",
+            WatsonVoice::FrFrReneeV3 => "ReneeV3 - French (France)",
+            WatsonVoice::ItItFrancescaV3 => "FrancescaV3 - Italian (Italy)",
+            WatsonVoice::JaJpEmiV3 => "EmiV3 - Japanese (Japan)",
+            WatsonVoice::KoKrHyunjun => "Hyunjun - Koren (South Korea)",
+            WatsonVoice::KoKrSiWoo => "SiWoo - Koren (South Korea)",
+            WatsonVoice::KoKrYoungmi => "Youngmi - Koren (South Korea)",
+            WatsonVoice::KoKrYuna => "Yuna - Koren (South Korea)",
+            WatsonVoice::NlBeAdele => "Adele - Dutch (Belgium)",
+            WatsonVoice::NlBeBram => "Bram - Dutch (Belgium)",
+            WatsonVoice::NlNlEmma => "Emma - Dutch (Netherlands)",
+            WatsonVoice::NlNlLiam => "Liam - Dutch (Netherlands)",
+            WatsonVoice::PtBrIsabelaV3 => "Isabela - Portuguese (Brazil)",
+            WatsonVoice::SvSeIngrid => "Ingrid - Swedish (Sweden)",
+            WatsonVoice::ZhCnLiNa => "LiNa - Chinese (PRC)",
+            WatsonVoice::ZhCnWangWei => "WangWei - Chinese (PRC)",
+            WatsonVoice::ZhCnZhangJing => "ZhangJing - Chinese (PRC)",
         }
+        .to_string()
     }
 }
 
@@ -286,10 +289,10 @@ impl TextToSpeech<'_> {
 
                 Ok(root.voices)
             }
-            StatusCode::NOT_ACCEPTABLE => Err(ListVoicesError::NotAcceptable),
-            StatusCode::UNSUPPORTED_MEDIA_TYPE => Err(ListVoicesError::UnsupportedMediaType),
-            StatusCode::INTERNAL_SERVER_ERROR => Err(ListVoicesError::InternalServerError),
-            StatusCode::SERVICE_UNAVAILABLE => Err(ListVoicesError::ServiceUnavailable),
+            StatusCode::NOT_ACCEPTABLE => Err(ListVoicesError::NotAcceptable406),
+            StatusCode::UNSUPPORTED_MEDIA_TYPE => Err(ListVoicesError::UnsupportedMediaType415),
+            StatusCode::INTERNAL_SERVER_ERROR => Err(ListVoicesError::InternalServerError500),
+            StatusCode::SERVICE_UNAVAILABLE => Err(ListVoicesError::ServiceUnavailable503),
             _ => {
                 unreachable!()
             }
@@ -358,10 +361,10 @@ impl TextToSpeech<'_> {
 
                 Ok(root)
             }
-            StatusCode::NOT_ACCEPTABLE => Err(GetVoiceError::NotAcceptable),
-            StatusCode::UNSUPPORTED_MEDIA_TYPE => Err(GetVoiceError::UnsupportedMediaType),
-            StatusCode::INTERNAL_SERVER_ERROR => Err(GetVoiceError::InternalServerError),
-            StatusCode::SERVICE_UNAVAILABLE => Err(GetVoiceError::ServiceUnavailable),
+            StatusCode::NOT_ACCEPTABLE => Err(GetVoiceError::NotAcceptable406),
+            StatusCode::UNSUPPORTED_MEDIA_TYPE => Err(GetVoiceError::UnsupportedMediaType415),
+            StatusCode::INTERNAL_SERVER_ERROR => Err(GetVoiceError::InternalServerError500),
+            StatusCode::SERVICE_UNAVAILABLE => Err(GetVoiceError::ServiceUnavailable503),
             _ => {
                 unreachable!()
             }
