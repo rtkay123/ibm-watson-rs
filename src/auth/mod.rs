@@ -1,7 +1,9 @@
 mod errors;
-use hyper::{body::Buf, header::CONTENT_TYPE, Body, Client, Method, Request, StatusCode};
+use reqwest::{
+    header::{HeaderValue, CONTENT_TYPE},
+    Body, ClientBuilder, Method, Request, StatusCode, Url,
+};
 use serde::{Deserialize, Serialize};
-use url::Url;
 
 pub use errors::AuthenticationError;
 
@@ -77,31 +79,32 @@ impl IamAuthenticator {
     /// ```
     pub async fn new(api_key: impl AsRef<str>) -> Result<Self, AuthenticationError> {
         let url = Url::parse(AUTH_URL).unwrap();
-        let req = Request::builder()
-            .uri(url.to_string())
-            .method(Method::POST)
-            .header(CONTENT_TYPE, "application/x-www-form-urlencoded")
-            .body(Body::from(format!(
-                "grant_type=urn:ibm:params:oauth:grant-type:apikey&apikey={}",
-                api_key.as_ref()
-            )))
-            .map_err(|e| AuthenticationError::ConnectionError(e.to_string()))?;
-        let https = hyper_rustls::HttpsConnectorBuilder::new()
-            .with_native_roots()
-            .https_only()
-            .enable_http1()
-            .build();
-        let client = Client::builder().build(https);
-        let response = client
-            .request(req)
+        let mut req = Request::new(Method::POST, url);
+        let headers = req.headers_mut();
+        headers
+            .insert(
+                CONTENT_TYPE,
+                HeaderValue::from_str("application/x-www-form-urlencoded").unwrap(),
+            )
+            .unwrap();
+        let body = req.body_mut();
+        *body = Some(Body::from(format!(
+            "grant_type=urn:ibm:params:oauth:grant-type:apikey&apikey={}",
+            api_key.as_ref()
+        )));
+        let client = ClientBuilder::new();
+        #[cfg(feature = "http2")]
+        let client = client.http2_prior_knowledge();
+
+        let client = client.build().unwrap();
+        let resp = client
+            .execute(req)
             .await
             .map_err(|e| AuthenticationError::ConnectionError(e.to_string()))?;
-        match response.status() {
+        match resp.status() {
             StatusCode::OK => {
                 // asynchronously aggregate the chunks of the body
-                let body = hyper::body::aggregate(response).await.unwrap();
-                // try to parse as json with serde_json
-                let access_token: TokenResponse = serde_json::from_reader(body.reader()).unwrap();
+                let access_token: TokenResponse = resp.json().await.unwrap();
                 Ok(Self { access_token })
             }
             StatusCode::BAD_REQUEST => Err(AuthenticationError::ParameterValidationFailed),

@@ -2,11 +2,7 @@ use std::borrow::Cow;
 /// Errors that may be returned in speech synthesis requests
 pub mod errors;
 
-use hyper::{
-    header::{HeaderValue, AUTHORIZATION},
-    Body, Method, Request, StatusCode,
-};
-use url::{form_urlencoded::byte_serialize, Url};
+use reqwest::{Method, Request, StatusCode, Url};
 
 use self::errors::SynthesisError;
 
@@ -210,24 +206,16 @@ impl TextToSpeech<'_> {
         if let Some(format) = format {
             url.query_pairs_mut().append_pair("accept", &format.id());
         }
-        let req = Request::builder()
-            .uri(url.to_string())
-            .header(
-                AUTHORIZATION,
-                HeaderValue::from_str(&format!("Bearer {}", self.access_token)).unwrap(),
-            )
-            .method(Method::GET)
-            .body(Body::empty())
-            .map_err(|e| SynthesisError::ConnectionError(e.to_string()))?;
+        let req = Request::new(Method::GET, url);
         let client = self.get_client();
         let response = client
-            .request(req)
+            .execute(req)
             .await
             .map_err(|e| SynthesisError::ConnectionError(e.to_string()))?;
         assert_eq!(response.status(), 200);
         match response.status() {
             StatusCode::OK => {
-                let bytes = hyper::body::to_bytes(response).await.unwrap();
+                let bytes = response.bytes().await.unwrap();
                 Ok(bytes)
             }
             StatusCode::NOT_ACCEPTABLE => Err(SynthesisError::NotAcceptable406),

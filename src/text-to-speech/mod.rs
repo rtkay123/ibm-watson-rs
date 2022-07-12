@@ -1,5 +1,7 @@
-use hyper::{client::HttpConnector, Client};
-use hyper_rustls::HttpsConnector;
+use reqwest::{
+    header::{HeaderMap, HeaderValue, AUTHORIZATION},
+    Client, ClientBuilder,
+};
 
 use crate::auth::IamAuthenticator;
 
@@ -15,7 +17,7 @@ pub struct TextToSpeech<'a> {
     access_token: &'a str,
     service_url: &'a str,
     voice: WatsonVoice,
-    client: Client<HttpsConnector<HttpConnector>>,
+    client: Client,
 }
 
 impl<'a> TextToSpeech<'a> {
@@ -45,12 +47,15 @@ impl<'a> TextToSpeech<'a> {
     pub fn new(authenticator: &'a IamAuthenticator, service_url: &'a str) -> Self {
         let ac = authenticator.token_response();
         let access_token = ac.access_token();
-        let https = hyper_rustls::HttpsConnectorBuilder::new()
-            .with_native_roots()
-            .https_only()
-            .enable_http1()
-            .build();
-        let client = Client::builder().build(https);
+        let client = ClientBuilder::new();
+        let default_headers = Self::default_headers(authenticator.token_response().access_token());
+        client.default_headers(default_headers);
+
+        #[cfg(feature = "http2")]
+        client.http2_prior_knowledge();
+
+        let client = client.build().unwrap();
+
         Self {
             access_token,
             service_url,
@@ -85,7 +90,15 @@ impl<'a> TextToSpeech<'a> {
         self.voice = voice;
     }
 
-    pub(crate) fn get_client(&self) -> Client<HttpsConnector<HttpConnector>> {
+    pub(crate) fn get_client(&self) -> Client {
         self.client.clone()
+    }
+
+    fn default_headers(token: &str) -> HeaderMap<HeaderValue> {
+        let mut headers = HeaderMap::new();
+        let mut auth_value = HeaderValue::from_static(&format!("Bearer {}", token));
+        auth_value.set_sensitive(true);
+        headers.insert(AUTHORIZATION, auth_value);
+        headers
     }
 }

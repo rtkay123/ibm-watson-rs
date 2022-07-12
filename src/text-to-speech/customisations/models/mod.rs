@@ -1,13 +1,7 @@
 use std::borrow::Cow;
 
-use bytes::Buf;
-use hyper::{
-    header::{HeaderValue, AUTHORIZATION, CONTENT_TYPE},
-    Body, Method, Request, StatusCode,
-};
+use reqwest::{Method, Request, StatusCode, Url};
 use serde::{Deserialize, Serialize};
-use serde_json::json;
-use url::Url;
 
 use crate::tts::TextToSpeech;
 
@@ -166,30 +160,21 @@ impl TextToSpeech<'_> {
             Some(s) => s.as_ref().to_owned(),
             None => String::default(),
         };
-        let form_body = json!( {
-            "name": name,
-            "language": language,
-            "description": description
-        });
-        let req = Request::builder()
-            .uri(url.to_string())
-            .header(
-                AUTHORIZATION,
-                HeaderValue::from_str(&format!("Bearer {}", self.access_token)).unwrap(),
-            )
-            .header(CONTENT_TYPE, "application/json")
-            .method(Method::POST)
-            .body(Body::from(form_body.to_string()))
-            .map_err(|e| CreateModelError::ConnectionError(e.to_string()))?;
+        let form_body = FormBody {
+            name,
+            language: &language,
+            description: &description,
+        };
         let client = self.get_client();
         let response = client
-            .request(req)
+            .post(url)
+            .json(&form_body)
+            .send()
             .await
             .map_err(|e| CreateModelError::ConnectionError(e.to_string()))?;
         match response.status() {
             StatusCode::OK => {
-                let body = hyper::body::aggregate(response).await.unwrap();
-                let root: Model = serde_json::from_reader(body.reader()).unwrap();
+                let root: Model = response.json().await.unwrap();
                 Ok(root)
             }
             StatusCode::BAD_REQUEST => Err(CreateModelError::BadRequest400),
@@ -231,28 +216,19 @@ impl TextToSpeech<'_> {
         let mut url = Url::parse(self.service_url).unwrap();
         url.set_path("v1/customizations");
         url.set_query(Some(&language.unwrap_or_default().id()));
-        let req = Request::builder()
-            .uri(url.to_string())
-            .header(
-                AUTHORIZATION,
-                HeaderValue::from_str(&format!("Bearer {}", self.access_token)).unwrap(),
-            )
-            .method(Method::GET)
-            .body(Body::empty())
-            .map_err(|e| ListModelError::ConnectionError(e.to_string()))?;
+        let req = Request::new(Method::GET, url);
         let client = self.get_client();
         let response = client
-            .request(req)
+            .execute(req)
             .await
             .map_err(|e| ListModelError::ConnectionError(e.to_string()))?;
         match response.status() {
             StatusCode::OK => {
-                let body = hyper::body::aggregate(response).await.unwrap();
                 #[derive(Deserialize, Serialize)]
                 struct Root {
                     customizations: Vec<Model>,
                 }
-                let root: Root = serde_json::from_reader(body.reader()).unwrap();
+                let root: Root = response.json().await.unwrap();
                 Ok(root.customizations)
             }
             StatusCode::BAD_REQUEST => Err(ListModelError::BadRequest400),
@@ -325,20 +301,12 @@ impl TextToSpeech<'_> {
                 }
             }
         }
-        let data = serde_json::to_string(&Foo::new(name, description, words)).unwrap();
-        let req = Request::builder()
-            .uri(url.to_string())
-            .header(
-                AUTHORIZATION,
-                HeaderValue::from_str(&format!("Bearer {}", self.access_token)).unwrap(),
-            )
-            .header(CONTENT_TYPE, "application/json")
-            .method(Method::POST)
-            .body(Body::from(data))
-            .map_err(|e| UpdateModelError::ConnectionError(e.to_string()))?;
+        let data = Foo::new(name, description, words);
         let client = self.get_client();
         let response = client
-            .request(req)
+            .post(url)
+            .json(&data)
+            .send()
             .await
             .map_err(|e| UpdateModelError::ConnectionError(e.to_string()))?;
         match response.status() {
@@ -383,24 +351,15 @@ impl TextToSpeech<'_> {
     ) -> Result<Model, GetModelError> {
         let mut url = Url::parse(self.service_url).unwrap();
         url.set_path(&format!("v1/customizations/{}", customisation_id.as_ref()));
-        let req = Request::builder()
-            .uri(url.to_string())
-            .header(
-                AUTHORIZATION,
-                HeaderValue::from_str(&format!("Bearer {}", self.access_token)).unwrap(),
-            )
-            .method(Method::GET)
-            .body(Body::empty())
-            .map_err(|e| GetModelError::ConnectionError(e.to_string()))?;
+        let req = Request::new(Method::GET, url);
         let client = self.get_client();
         let response = client
-            .request(req)
+            .execute(req)
             .await
             .map_err(|e| GetModelError::ConnectionError(e.to_string()))?;
         match response.status() {
             StatusCode::OK => {
-                let body = hyper::body::aggregate(response).await.unwrap();
-                let root: Model = serde_json::from_reader(body.reader()).unwrap();
+                let root: Model = response.json().await.unwrap();
                 Ok(root)
             }
             StatusCode::BAD_REQUEST => Err(GetModelError::BadRequest400(
@@ -447,18 +406,10 @@ impl TextToSpeech<'_> {
     ) -> Result<(), DeleteModelError> {
         let mut url = Url::parse(self.service_url).unwrap();
         url.set_path(&format!("v1/customizations/{}", customisation_id.as_ref()));
-        let req = Request::builder()
-            .uri(url.to_string())
-            .header(
-                AUTHORIZATION,
-                HeaderValue::from_str(&format!("Bearer {}", self.access_token)).unwrap(),
-            )
-            .method(Method::DELETE)
-            .body(Body::empty())
-            .map_err(|e| DeleteModelError::ConnectionError(e.to_string()))?;
+        let req = Request::new(Method::DELETE, url);
         let client = self.get_client();
         let response = client
-            .request(req)
+            .execute(req)
             .await
             .map_err(|e| DeleteModelError::ConnectionError(e.to_string()))?;
         match response.status() {

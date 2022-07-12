@@ -1,13 +1,8 @@
-use hyper::{
-    body::Buf,
-    header::{HeaderValue, AUTHORIZATION},
-    Body, Method, Request, StatusCode,
-};
+use reqwest::{Method, Request, StatusCode, Url};
 use serde::{Deserialize, Serialize};
 
 /// Errors that may be returned in making Voice requests
 pub mod errors;
-use url::Url;
 
 use crate::tts::voices::errors::GetVoiceError;
 
@@ -264,18 +259,10 @@ impl TextToSpeech<'_> {
     pub async fn list_voices(&self) -> Result<Vec<Voice>, ListVoicesError> {
         let mut url = Url::parse(self.service_url).unwrap();
         Self::set_voices_path(&mut url);
-        let req = Request::builder()
-            .uri(url.to_string())
-            .header(
-                AUTHORIZATION,
-                HeaderValue::from_str(&format!("Bearer {}", self.access_token)).unwrap(),
-            )
-            .method(Method::GET)
-            .body(Body::empty())
-            .map_err(|e| ListVoicesError::ConnectionError(e.to_string()))?;
+        let req = Request::new(Method::GET, url);
         let client = self.get_client();
         let response = client
-            .request(req)
+            .execute(req)
             .await
             .map_err(|e| ListVoicesError::ConnectionError(e.to_string()))?;
         match response.status() {
@@ -284,8 +271,7 @@ impl TextToSpeech<'_> {
                 struct Root {
                     voices: Vec<Voice>,
                 }
-                let body = hyper::body::aggregate(response).await.unwrap();
-                let root: Root = serde_json::from_reader(body.reader()).unwrap();
+                let root: Root = response.json().await.unwrap();
 
                 Ok(root.voices)
             }
@@ -339,25 +325,16 @@ impl TextToSpeech<'_> {
         let mut url = Url::parse(self.service_url).unwrap();
         Self::set_voices_path(&mut url);
         url.set_query(customisation_id);
-        let req = Request::builder()
-            .uri(format!("{}/{}", url, voice.id()))
-            .header(
-                AUTHORIZATION,
-                HeaderValue::from_str(&format!("Bearer {}", self.access_token)).unwrap(),
-            )
-            .method(Method::GET)
-            .body(Body::empty())
-            .map_err(|e| GetVoiceError::ConnectionError(e.to_string()))?;
+        let req = Request::new(Method::GET, url);
         let client = self.get_client();
         let response = client
-            .request(req)
+            .execute(req)
             .await
             .map_err(|e| GetVoiceError::ConnectionError(e.to_string()))?;
         assert_eq!(response.status(), 200);
         match response.status() {
             StatusCode::OK => {
-                let body = hyper::body::aggregate(response).await.unwrap();
-                let root: Voice = serde_json::from_reader(body.reader()).unwrap();
+                let root: Voice = response.json().await.unwrap();
 
                 Ok(root)
             }

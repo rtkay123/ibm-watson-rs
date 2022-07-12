@@ -1,10 +1,8 @@
-use bytes::Buf;
-use hyper::{
-    header::{HeaderValue, AUTHORIZATION, CONTENT_TYPE},
-    Body, Method, Request, StatusCode,
+use reqwest::{
+    header::{HeaderValue, CONTENT_TYPE},
+    Body, Method, Request, StatusCode, Url,
 };
 use serde::{Deserialize, Serialize};
-use url::Url;
 
 use crate::tts::TextToSpeech;
 
@@ -80,19 +78,13 @@ impl TextToSpeech<'_> {
             }
         }
         let body = serde_json::to_string(&FormBody::new(words)).unwrap();
-        let req = Request::builder()
-            .uri(url.to_string())
-            .header(
-                AUTHORIZATION,
-                HeaderValue::from_str(&format!("Bearer {}", self.access_token)).unwrap(),
-            )
-            .header(CONTENT_TYPE, "application/json")
-            .method(Method::POST)
-            .body(Body::from(body))
-            .map_err(|e| AddWordError::ConnectionError(e.to_string()))?;
+        let mut req = Request::new(Method::POST, url);
+        req.headers_mut()
+            .insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
+        *req.body_mut() = Some(Body::from(body));
         let client = self.get_client();
         let response = client
-            .request(req)
+            .execute(req)
             .await
             .map_err(|e| AddWordError::ConnectionError(e.to_string()))?;
         match response.status() {
@@ -139,28 +131,19 @@ impl TextToSpeech<'_> {
     ) -> Result<Vec<Word>, ListWordsError> {
         let mut url = Url::parse(self.service_url).unwrap();
         Self::set_words_path(&mut url, &customisation_id);
-        let req = Request::builder()
-            .uri(url.to_string())
-            .header(
-                AUTHORIZATION,
-                HeaderValue::from_str(&format!("Bearer {}", self.access_token)).unwrap(),
-            )
-            .method(Method::GET)
-            .body(Body::empty())
-            .map_err(|e| ListWordsError::ConnectionError(e.to_string()))?;
+        let req = Request::new(Method::GET, url);
         let client = self.get_client();
         let response = client
-            .request(req)
+            .execute(req)
             .await
             .map_err(|e| ListWordsError::ConnectionError(e.to_string()))?;
         match response.status() {
             StatusCode::OK => {
-                let body = hyper::body::aggregate(response).await.unwrap();
                 #[derive(Deserialize, Serialize)]
                 struct Root {
                     words: Vec<Word>,
                 }
-                let root: Root = serde_json::from_reader(body.reader()).unwrap();
+                let root: Root = response.json().await.unwrap();
                 Ok(root.words)
             }
             StatusCode::BAD_REQUEST => Err(ListWordsError::BadRequest400),
@@ -233,19 +216,13 @@ impl TextToSpeech<'_> {
             }
         }
         let body = serde_json::to_string(&FormBody::new(word)).unwrap();
-        let req = Request::builder()
-            .uri(url.to_string())
-            .header(
-                AUTHORIZATION,
-                HeaderValue::from_str(&format!("Bearer {}", self.access_token)).unwrap(),
-            )
-            .header(CONTENT_TYPE, "application/json")
-            .method(Method::PUT)
-            .body(Body::from(body))
-            .map_err(|e| AddWordError::ConnectionError(e.to_string()))?;
+        let mut req = Request::new(Method::PUT, url);
+        req.headers_mut()
+            .insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
+        *req.body_mut() = Some(Body::from(body));
         let client = self.get_client();
         let response = client
-            .request(req)
+            .execute(req)
             .await
             .map_err(|e| AddWordError::ConnectionError(e.to_string()))?;
         match response.status() {
@@ -298,24 +275,15 @@ impl TextToSpeech<'_> {
             customisation_id.as_ref(),
             word.as_ref()
         ));
-        let req = Request::builder()
-            .uri(url.to_string())
-            .header(
-                AUTHORIZATION,
-                HeaderValue::from_str(&format!("Bearer {}", self.access_token)).unwrap(),
-            )
-            .method(Method::GET)
-            .body(Body::empty())
-            .map_err(|e| GetWordError::ConnectionError(e.to_string()))?;
+        let req = Request::new(Method::GET, url);
         let client = self.get_client();
         let response = client
-            .request(req)
+            .execute(req)
             .await
             .map_err(|e| GetWordError::ConnectionError(e.to_string()))?;
         match response.status() {
             StatusCode::OK => {
-                let body = hyper::body::aggregate(response).await.unwrap();
-                let root: Word = serde_json::from_reader(body.reader()).unwrap();
+                let root: Word = response.json().await.unwrap();
                 Ok(root)
             }
             StatusCode::BAD_REQUEST => Err(GetWordError::BadRequest400),
@@ -366,18 +334,10 @@ impl TextToSpeech<'_> {
             customisation_id.as_ref(),
             word.as_ref()
         ));
-        let req = Request::builder()
-            .uri(url.to_string())
-            .header(
-                AUTHORIZATION,
-                HeaderValue::from_str(&format!("Bearer {}", self.access_token)).unwrap(),
-            )
-            .method(Method::DELETE)
-            .body(Body::empty())
-            .map_err(|e| DeleteWordError::ConnectionError(e.to_string()))?;
+        let req = Request::new(Method::DELETE, url);
         let client = self.get_client();
         let response = client
-            .request(req)
+            .execute(req)
             .await
             .map_err(|e| DeleteWordError::ConnectionError(e.to_string()))?;
         match response.status() {

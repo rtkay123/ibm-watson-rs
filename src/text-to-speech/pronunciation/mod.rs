@@ -1,10 +1,5 @@
-use bytes::Buf;
-use hyper::{
-    header::{HeaderValue, AUTHORIZATION},
-    Body, Method, Request, StatusCode,
-};
+use reqwest::{Method, Request, StatusCode, Url};
 use serde::{Deserialize, Serialize};
-use url::Url;
 pub mod errors;
 
 use self::errors::PronunciationError;
@@ -86,6 +81,7 @@ impl TextToSpeech<'_> {
     ) -> Result<Pronunciation, PronunciationError> {
         let mut url = Url::parse(self.service_url).unwrap();
         url.set_path("v1/pronunciation");
+
         url.query_pairs_mut()
             .append_pair("text", text.as_ref())
             .append_pair("format", format.unwrap_or_default().id())
@@ -100,24 +96,15 @@ impl TextToSpeech<'_> {
             url.query_pairs_mut()
                 .append_pair("customization_id", c_id.as_ref());
         }
-        let req = Request::builder()
-            .uri(url.to_string())
-            .header(
-                AUTHORIZATION,
-                HeaderValue::from_str(&format!("Bearer {}", self.access_token)).unwrap(),
-            )
-            .method(Method::GET)
-            .body(Body::empty())
-            .map_err(|e| PronunciationError::ConnectionError(e.to_string()))?;
+        let req = Request::new(Method::GET, url);
         let client = self.get_client();
         let response = client
-            .request(req)
+            .execute(req)
             .await
             .map_err(|e| PronunciationError::ConnectionError(e.to_string()))?;
         match response.status() {
             StatusCode::OK => {
-                let body = hyper::body::aggregate(response).await.unwrap();
-                let root: Pronunciation = serde_json::from_reader(body.reader()).unwrap();
+                let root: Pronunciation = response.json().await.unwrap();
                 Ok(root)
             }
             StatusCode::NOT_ACCEPTABLE => Err(PronunciationError::NotAcceptable406),
