@@ -10,7 +10,7 @@ use tokio::io::{AsyncReadExt, BufReader};
 
 use crate::tts::TextToSpeech;
 
-use super::errors::{AddPromptError, ListPromptsError};
+use super::errors::{AddPromptError, DeletePromptError, GetPromptError, ListPromptsError};
 
 #[derive(Clone, Debug, Eq, PartialEq, Default, Serialize, Deserialize)]
 struct OuterPrompt {
@@ -145,7 +145,7 @@ impl TextToSpeech<'_> {
         }
     }
 
-    /// Adds a custom prompt to a custom model. A prompt is defined by the text that is to be spoken, the audio for that text, a unique user-specified ID for the prompt, and an optional speaker ID. The information is used to generate prosodic data that is not visible to the user. This data is used by the service to produce the synthesized audio upon request. You must use credentials for the instance of the service that owns a custom model to add a prompt to it. You can add a maximum of 1000 custom prompts to a single custom model
+    /// Adds a custom prompt to a custom [`model`]. A prompt is defined by the text that is to be spoken, the audio for that text, a unique user-specified ID for the prompt, and an optional speaker ID. The information is used to generate prosodic data that is not visible to the user. This data is used by the service to produce the synthesized audio upon request. You must use credentials for the instance of the service that owns a custom model to add a prompt to it. You can add a maximum of 1000 custom prompts to a single custom model
     ///
     /// # Parameters
     ///
@@ -249,6 +249,116 @@ impl TextToSpeech<'_> {
             StatusCode::INTERNAL_SERVER_ERROR => Err(AddPromptError::InternalServerError500),
             StatusCode::SERVICE_UNAVAILABLE => Err(AddPromptError::ServiceUnavailable503),
             _ => unreachable!(),
+        }
+    }
+
+    /// Gets information about a specified custom prompt for a specified custom model. The information includes the prompt ID, prompt text, status, and optional speaker ID for each prompt of the custom model. You must use credentials for the instance of the service that owns the custom model. Custom prompts are supported only for use with US English custom models and voices
+    ///
+    /// # Parameters
+    ///
+    /// * `customisation_id` - The customization ID (GUID) of the custom model. You must make the request with credentials for the instance of the service that owns the custom model
+    /// * `prompt_id` - The identifier (name) of the prompt
+    ///
+    /// # Example
+    /// ``` no_run
+    /// # use ibm_watson::{
+    /// #     auth::IamAuthenticator,
+    /// #     tts::{voices::WatsonVoice, TextToSpeech,
+    /// #     customisations::Prompt},
+    /// # };
+    /// # async fn foo()-> Result<(), Box<dyn std::error::Error>> {
+    /// # let auth = IamAuthenticator::new("api_key").await?;
+    /// # let tts = TextToSpeech::new(&auth, "service_url");
+    /// let prompt = tts.get_custom_prompt("cust-id", "prompt_id").await?;
+    /// println!("{:#?}", prompt);
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn get_custom_prompt(
+        &self,
+        customisation_id: impl AsRef<str>,
+        prompt_id: impl AsRef<str>,
+    ) -> Result<Prompt, GetPromptError> {
+        let mut url = Url::parse(self.service_url).unwrap();
+        url.set_path(&format!(
+            "v1/customizations/{}/prompts/{}",
+            customisation_id.as_ref(),
+            prompt_id.as_ref()
+        ));
+        let req = Request::new(Method::GET, url);
+        let client = self.get_client();
+        let response = client
+            .execute(req)
+            .await
+            .map_err(|e| GetPromptError::ConnectionError(e.to_string()))?;
+        match response.status() {
+            StatusCode::OK => {
+                let root: Prompt = response.json().await.unwrap();
+                Ok(root)
+            }
+            StatusCode::BAD_REQUEST => Err(GetPromptError::BadRequest400(
+                customisation_id.as_ref().to_owned(),
+            )),
+            StatusCode::INTERNAL_SERVER_ERROR => Err(GetPromptError::InternalServerError500),
+            StatusCode::SERVICE_UNAVAILABLE => Err(GetPromptError::ServiceUnavailable503),
+            StatusCode::UNAUTHORIZED => Err(GetPromptError::Unauthorised401(
+                customisation_id.as_ref().to_owned(),
+            )),
+            _ => {
+                unreachable!()
+            }
+        }
+    }
+
+    /// Deletes an existing custom prompt from a custom [`model`]. The service deletes the prompt with the specified ID. You must use credentials for the instance of the service that owns the custom model from which the prompt is to be deleted
+    ///
+    /// # Example
+    /// ``` no_run
+    /// # use ibm_watson::{
+    /// #     auth::IamAuthenticator,
+    /// #     tts::{voices::WatsonVoice, TextToSpeech},
+    /// # };
+    /// # async fn foo()-> Result<(), Box<dyn std::error::Error>> {
+    /// # let auth = IamAuthenticator::new("api_key").await?;
+    /// # let tts = TextToSpeech::new(&auth, "service_url");
+    /// if tts.delete_custom_prompt("cust-id", "prompt-id").await.is_ok() {
+    ///     println!("prompt deleted");
+    /// }
+    /// # Ok(())
+    /// # }
+    /// ```
+    /// [`model`]: crate::tts::customisations::Model
+    pub async fn delete_custom_prompt(
+        &self,
+        customisation_id: impl AsRef<str>,
+        prompt_id: impl AsRef<str>,
+    ) -> Result<(), DeletePromptError> {
+        let mut url = Url::parse(self.service_url).unwrap();
+        url.set_path(&format!(
+            "v1/customizations/{}/prompts/{}",
+            customisation_id.as_ref(),
+            prompt_id.as_ref()
+        ));
+        let req = Request::new(Method::DELETE, url);
+        let client = self.get_client();
+        let response = client
+            .execute(req)
+            .await
+            .map_err(|e| DeletePromptError::ConnectionError(e.to_string()))?;
+        match response.status() {
+            StatusCode::NO_CONTENT => Ok(()),
+            StatusCode::BAD_REQUEST => Err(DeletePromptError::BadRequest400(
+                customisation_id.as_ref().to_owned(),
+            )),
+            StatusCode::INTERNAL_SERVER_ERROR => Err(DeletePromptError::InternalServerError500),
+            StatusCode::SERVICE_UNAVAILABLE => Err(DeletePromptError::ServiceUnavailable503),
+            StatusCode::UNAUTHORIZED => Err(DeletePromptError::Unauthorised401(
+                customisation_id.as_ref().to_owned(),
+                prompt_id.as_ref().to_string(),
+            )),
+            _ => {
+                unreachable!()
+            }
         }
     }
 }
