@@ -7,13 +7,19 @@ use crate::auth::IamAuthenticator;
 
 use self::voices::WatsonVoice;
 
+/// Manage custom Prompts, Words, Models
 pub mod customisations;
+/// Manage word pronunciation
 pub mod pronunciation;
 #[path = "speaker-models/mod.rs"]
+/// Manage speaker models
 pub mod speaker_models;
+/// Synthesise text to speech
 pub mod synthesis;
 #[path = "user-data/mod.rs"]
+/// Delete user data
 pub mod user_data;
+/// View information about Watson voices
 pub mod voices;
 
 /// Creates a client used to send requests to your Text To Speech endpoint
