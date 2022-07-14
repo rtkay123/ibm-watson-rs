@@ -312,6 +312,11 @@ impl TextToSpeech<'_> {
 
     /// Deletes an existing custom prompt from a custom [`model`]. The service deletes the prompt with the specified ID. You must use credentials for the instance of the service that owns the custom model from which the prompt is to be deleted
     ///
+    /// # Parameters
+    ///
+    /// `customisation_id` - The customization ID (GUID) of the custom model. You must make the request with credentials for the instance of the service that owns the custom model
+    /// `prompt_id` - The identifier (name) of the prompt that is to be deleted
+    ///
     /// # Example
     /// ``` no_run
     /// # use ibm_watson::{

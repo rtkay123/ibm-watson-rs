@@ -9,6 +9,8 @@ use self::voices::WatsonVoice;
 
 pub mod customisations;
 pub mod pronunciation;
+#[path = "speaker-models/mod.rs"]
+pub mod speaker_models;
 pub mod synthesis;
 pub mod voices;
 
