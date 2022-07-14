@@ -56,6 +56,7 @@ pub enum GetSpeakerError {
     #[error("The requested resource has not been modified since the time specified by the If-Modified-Since header, as documented in the HTTP specification")]
     NotModified304,
 }
+
 #[derive(Error, Debug)]
 pub enum DeleteSpeakerError {
     /// There was an error establishing the connection

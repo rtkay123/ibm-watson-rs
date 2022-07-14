@@ -12,6 +12,8 @@ pub mod pronunciation;
 #[path = "speaker-models/mod.rs"]
 pub mod speaker_models;
 pub mod synthesis;
+#[path = "user-data/mod.rs"]
+pub mod user_data;
 pub mod voices;
 
 /// Creates a client used to send requests to your Text To Speech endpoint
