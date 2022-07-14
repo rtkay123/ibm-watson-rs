@@ -1,10 +1,7 @@
 #![feature(doc_cfg)]
-//! An wrapper for interacting with IBM Watson's API
-//!
-//! Please have a look at the IBM Watson [`API`] if you would like to know how things work behind
-//! the scenes:
-//!
-//! [`API`]: https://developer.ibm.com/components/watson-apis/apis
+
+//! <h1 style="text-align: center">IBM Watson</h1>
+//! <p style="text-align: center">A wrapper for interacting with IBM Watson's API</p>
 //!
 //! # Usage
 //!
@@ -41,15 +38,16 @@
 //!#     tts::TextToSpeech
 //!# };
 //! # #[tokio::main]
-//! # async fn main() {
+//! # async fn main() -> Result<(), Box <dyn std::error::Error> {
 //! // Get your IAM access token with the API Key of the particular service you want to use
-//! let auth = IamAuthenticator::new("my_api_key").await.unwrap();
+//! let auth = IamAuthenticator::new("my_api_key").await?;
 //! // Create a new Text To Speech instance that you will use to interact with the API
 //! let tts = TextToSpeech::new(&auth, "tts-endpoint");
 //! // Call whatever method you would like to use from it
-//! let synth = tts.synthesise("Hello world", None, None).await.unwrap();
-//! let mut file = File::create("file.ogg").unwrap();
-//! file.write_all(&synth).unwrap();
+//! let synth = tts.synthesise("Hello world", None, None).await?;
+//! let mut file = File::create("file.ogg")?;
+//! file.write_all(&synth)?;
+//! #Ok(());
 //! # }
 //! ```
 //!
@@ -63,8 +61,8 @@
 //!#     voices::WatsonVoice},
 //!# };
 //! # #[tokio::main]
-//! # async fn main() {
-//! # let auth = IamAuthenticator::new("my_api_key").await.unwrap();
+//! # async fn main() -> Result<(), Box <dyn std::error::Error> {
+//! # let auth = IamAuthenticator::new("my_api_key").await?;
 //! # let mut tts = TextToSpeech::new(&auth, "tts-endpoint");
 //! // This sets Kate (United Kingdom) to be the default voice for your requests
 //! tts.set_voice(WatsonVoice::EnGbKateV3);
@@ -73,15 +71,16 @@
 //! // If `None` is passed, then the crate will default to 22050.
 //!     sample_rate: Some(44100),
 //! };
-//! let synth = tts.synthesise("Hello world", Some(format), None).await.unwrap();
+//! let synth = tts.synthesise("Hello world", Some(format), None).await?;
+//! # Ok(())
 //! # }
 //! ```
 //!
-//! To run a quick demonstration that prints all voices available for usage and synthesises "Hello
-//! world":
+//! There are examples ready to get you started quickly. To run an example that uses the Text To
+//! Speech service to print available voices and then synthesise the text you entered to a file:
 //!
 //! ```sh
-//! cargo run --example tts --features="tts" -- --api-key "my_api_key" --service-url "my_service_url"
+//! cargo run --example tts --features="tts" -- -a "my_api_key" -s "my_service_url" -t "Greetings from Rust"
 //! ```
 //!
 //! # License
@@ -102,6 +101,9 @@
 //! Unless you explicitly state otherwise, any contribution intentionally submitted
 //! for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
 //! dual licensed as above, without any additional terms or conditions.
+//!
+//! <p style="font-style: italic">This is currently unofficial, experimental software that is under development. As such, contributions are welcome.</p>
+//! <p style="font-style: italic">This crate's documentation is sourced from IBM Watson's official <a href = "https://developer.ibm.com/components/watson-apis/apis">API Documentation.</a> If you would like to know more about Watson's API, that would be a good place to start.</p>
 #[warn(
     missing_debug_implementations,
     missing_docs,

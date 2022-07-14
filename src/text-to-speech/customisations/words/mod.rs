@@ -105,7 +105,7 @@ impl TextToSpeech<'_> {
     ///
     /// # Parameters
     ///
-    /// * `customisation_id` -  The customization ID (GUID) of the custom [`model`]. You must make the request with credentials for the instance of the service that owns the custom model
+    /// * `customisation_id` -  The customisation ID (GUID) of the custom [`model`]. You must make the request with credentials for the instance of the service that owns the custom model
     ///
     /// # Example
     /// ``` no_run
@@ -162,8 +162,8 @@ impl TextToSpeech<'_> {
     ///
     /// # Parameters
     ///
-    /// * `customisation_id` -  The customization ID (GUID) of the custom [`model`]. You must make the request with credentials for the instance of the service that owns the custom model
-    /// * `word` -  The customization ID (GUID) of the custom [`model`]. You must make the request with credentials for the instance of the service that owns the custom model
+    /// * `customisation_id` -  The customisation ID (GUID) of the custom [`model`]. You must make the request with credentials for the instance of the service that owns the custom model
+    /// * `word` -  The customisation ID (GUID) of the custom [`model`]. You must make the request with credentials for the instance of the service that owns the custom model
     ///
     /// # Example
     /// ``` no_run
@@ -243,7 +243,7 @@ impl TextToSpeech<'_> {
     ///
     /// # Parameters
     ///
-    /// * `customisation_id` - The customization ID (GUID) of the custom [`model`]. You must make the request with credentials for the instance of the service that owns the custom model
+    /// * `customisation_id` - The customisation ID (GUID) of the custom [`model`]. You must make the request with credentials for the instance of the service that owns the custom model
     /// * `word` - The word that is to be queried from the custom [`model`]
     ///
     /// # Example
@@ -301,7 +301,7 @@ impl TextToSpeech<'_> {
     /// Deletes a single word from the specified custom model. You must use credentials for the instance of the service that owns a model to delete its words.
     /// # Parameters
     ///
-    /// * `customisation_id` - The customization ID (GUID) of the custom [`model`]. You must make the request with credentials for the instance of the service that owns the custom model
+    /// * `customisation_id` - The customisation ID (GUID) of the custom [`model`]. You must make the request with credentials for the instance of the service that owns the custom model
     /// * `word` - The word that is to be queried from the custom [`model`]
     ///
     /// # Example

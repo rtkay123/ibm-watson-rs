@@ -14,7 +14,7 @@ use super::{
 #[derive(Clone, Debug, PartialEq, Eq, Default, Serialize, Deserialize)]
 /// Defines a custom model
 pub struct Model {
-    /// the customization id (guid) of the custom model. the create a custom model method returns only this field. it does not not return the other fields of this object.
+    /// the customisation id (guid) of the custom model. the create a custom model method returns only this field. it does not not return the other fields of this object.
     #[serde(rename = "customization_id")]
     pub customisation_id: String,
     /// the name of the custom model.
@@ -249,7 +249,7 @@ impl TextToSpeech<'_> {
     ///
     /// # Parameters
     ///
-    /// * `customisation_id` - The customization ID (GUID) of the custom model. You must make the request with credentials for the instance of the service that owns the custom model
+    /// * `customisation_id` - The customisation ID (GUID) of the custom model. You must make the request with credentials for the instance of the service that owns the custom model
     /// * `name` - A new [`name`] for the custom model
     /// * `description` - A new [`description`] for the custom model
     /// * `words` - An array of [`Word`] objects that provides the words and their translations that are to be added or updated for the custom model. Pass an empty array to make no additions or updates
@@ -327,7 +327,7 @@ impl TextToSpeech<'_> {
     ///
     /// # Parameters
     ///
-    /// * `customisation_id` - The customization ID (GUID) of the custom model. You must make the request with credentials for the instance of the service that owns the custom model
+    /// * `customisation_id` - The customisation ID (GUID) of the custom model. You must make the request with credentials for the instance of the service that owns the custom model
     ///
     /// # Example
     /// ``` no_run
@@ -381,7 +381,7 @@ impl TextToSpeech<'_> {
     ///
     /// # Parameters
     ///
-    /// * `customisation_id` - The customization ID (GUID) of the custom model. You must make the request with credentials for the instance of the service that owns the custom model
+    /// * `customisation_id` - The customisation ID (GUID) of the custom model. You must make the request with credentials for the instance of the service that owns the custom model
     ///
     /// # Example
     /// ``` no_run

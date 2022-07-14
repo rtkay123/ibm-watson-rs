@@ -46,7 +46,7 @@ pub enum UpdateModelError {
     #[error("The service experienced an internal error")]
     /// The service experienced an internal error
     InternalServerError500,
-    #[error("The specified customization_id {0} is invalid for the requesting credentials")]
+    #[error("The specified customisation_id {0} is invalid for the requesting credentials")]
     /// The specified customisation_id is invalid for the requesting credentials
     Unauthorised401(String),
 }
@@ -66,7 +66,7 @@ pub enum GetModelError {
     /// The service experienced an internal error
     InternalServerError500,
     /// "The specified customisation_id is invalid for the requesting credentials
-    #[error("The specified customization_id {0} is invalid for the requesting credentials")]
+    #[error("The specified customisation_id {0} is invalid for the requesting credentials")]
     Unauthorised401(String),
     #[error(" The requested resource has not been modified since the time specified by the If-Modified-Since header, as documented in the HTTP specification.")]
     /// The requested resource has not been modified since the time specified by the If-Modified-Since header, as documented in the HTTP specification
@@ -87,7 +87,7 @@ pub enum DeleteModelError {
     #[error("The service experienced an internal error")]
     /// The service experienced an internal error
     InternalServerError500,
-    #[error("The specified customization_id {0} is invalid for the requesting credentials")]
+    #[error("The specified customisation_id {0} is invalid for the requesting credentials")]
     /// The specified customisation_id is invalid for the requesting credentials
     Unauthorised401(String),
 }

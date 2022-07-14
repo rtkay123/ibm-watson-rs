@@ -4,7 +4,7 @@ use thiserror::Error;
 /// Errors that may be returned in speech synethesis
 pub enum SynthesisError {
     #[error("A required input parameter is null or a specified input parameter or header value is invalid")]
-    ///  A required input parameter is null or a specified input parameter or header value is invalid. For example, prompt_id '{prompt_id}' not found in custom model '{customization_id}' if you attempt to use a nonexistent or deleted custom prompt
+    ///  A required input parameter is null or a specified input parameter or header value is invalid. For example, prompt_id '{prompt_id}' not found in custom model '{customisation_id}' if you attempt to use a nonexistent or deleted custom prompt
     BadRequest400,
     #[error("The specified voice does not exist")]
     /// The specified voice does not exist or, for IBM Cloud Pak for Data, the voice parameter was not specified but the default voice is not installed. The message is Model '{voice}' not found

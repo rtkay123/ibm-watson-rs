@@ -22,7 +22,8 @@ pub struct Speaker {
 #[derive(Deserialize, Serialize, Debug, PartialEq, Eq)]
 /// Provides information about the prompts that are defined for a specified speaker in the custom models that are owned by a specified service instance
 pub struct SpeakerCustomModel {
-    pub customization_id: String,
+    #[serde(rename = "customization_id")]
+    pub customisation_id: String,
     pub prompts: Vec<Prompt>,
 }
 
@@ -157,7 +158,7 @@ impl TextToSpeech<'_> {
         }
     }
 
-    /// Gets information about all prompts that are defined by a specified speaker for all custom models that are owned by a service instance. The information is grouped by the customization IDs of the custom models. For each custom model, the information lists information about each prompt that is defined for that custom model by the speaker. You must use credentials for the instance of the service that owns a speaker model to list its prompts. Speaker models and the custom prompts with which they are used are supported only for use with US English custom models and voices
+    /// Gets information about all prompts that are defined by a specified speaker for all custom models that are owned by a service instance. The information is grouped by the customisation IDs of the custom models. For each custom model, the information lists information about each prompt that is defined for that custom model by the speaker. You must use credentials for the instance of the service that owns a speaker model to list its prompts. Speaker models and the custom prompts with which they are used are supported only for use with US English custom models and voices
     ///
     /// # Parameters
     /// * `speaker_id` - The speaker ID (GUID) of the speaker model. You must make the request with service credentials for the instance of the service that owns the speaker model
@@ -258,4 +259,3 @@ impl TextToSpeech<'_> {
         }
     }
 }
-

@@ -170,7 +170,7 @@ impl TextToSpeech<'_> {
     ///
     /// * `text` - The text to synthesise
     /// * `format` - The requested [`AudioFormat`] (MIME type) of the audio. Defaults to [`AudioOggCodecsOpus`]
-    /// * `customisation_id` - The customization ID (GUID) of a custom [`model`] to use for the synthesis. If a custom model is specified, it works only if it matches the [`language`] of the indicated voice. You must make the request with credentials for the instance of the service that owns the custom model. Omit the parameter to use the specified voice with no customization
+    /// * `customisation_id` - The customisation ID (GUID) of a custom [`model`] to use for the synthesis. If a custom model is specified, it works only if it matches the [`language`] of the indicated voice. You must make the request with credentials for the instance of the service that owns the custom model. Omit the parameter to use the specified voice with no customisation
     ///
     /// [`AudioFormat`]: super::synthesis::AudioFormat
     /// [`AudioOggCodecsOpus`]: super::synthesis::AudioFormat::AudioOggCodecsOpus

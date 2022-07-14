@@ -28,20 +28,20 @@ pub struct Voice {
     /// A textual description of the voice
     pub description: String,
     #[serde(rename = "customizable")]
-    /// If true, the voice can be customized; if false, the voice cannot be customized. (Same as custom_pronunciation; maintained for backward compatibility.)
+    /// If true, the voice can be customised; if false, the voice cannot be customised. (Same as custom_pronunciation; maintained for backward compatibility.)
     pub customisable: bool,
     #[serde(rename = "supported_features")]
     /// Additional service [features](SupportedFeatures) that are supported with the voice
     pub supported_features: Box<SupportedFeatures>,
     #[serde(rename = "customization", skip_serializing_if = "Option::is_none")]
-    /// Returns information about a specified custom [model](super::customisations::Model). This field is returned only by the Get a voice method and only when you specify the customization ID of a custom model
+    /// Returns information about a specified custom [model](super::customisations::Model). This field is returned only by the Get a voice method and only when you specify the customisation ID of a custom model
     pub customisation: Option<Box<Model>>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Default, Serialize, Deserialize)]
 /// Additional service features that are supported with the voice
 pub struct SupportedFeatures {
-    /// If true, the voice can be customized; if false, the voice cannot be customized. (Same as customizable.)
+    /// If true, the voice can be customised; if false, the voice cannot be customised. (Same as customisable.)
     #[serde(rename = "custom_pronunciation")]
     pub custom_pronunciation: bool,
     /// If true, the voice can be transformed by using the SSML <voice-transformation> element; if false, the voice cannot be transformed. The feature was available only for the now-deprecated standard voices. You cannot use the feature with neural voices.
@@ -289,12 +289,12 @@ impl TextToSpeech<'_> {
         uri.set_path("v1/voices");
     }
 
-    /// Returns information about the specified [`Voice`]. The information includes the [`name`], [`language`], [`gender`], and other details about the voice. Specify a customization ID to obtain information for a custom model that is defined for the language of the specified voice. To list information about all available voices, use  [list_voices()](`Self::list_voices()`)
+    /// Returns information about the specified [`Voice`]. The information includes the [`name`], [`language`], [`gender`], and other details about the voice. Specify a customisation ID to obtain information for a custom model that is defined for the language of the specified voice. To list information about all available voices, use  [list_voices()](`Self::list_voices()`)
     ///
     /// # Parameters
     ///
     /// * `voice` - The particular [`WatsonVoice`] you want information about
-    /// * `customisation_id` - The customization ID (GUID) of a custom model for which information is to be returned. You must make the request with credentials for the instance of the service that owns the custom model. Omit the parameter to see information about the specified voice with no customization
+    /// * `customisation_id` - The customisation ID (GUID) of a custom model for which information is to be returned. You must make the request with credentials for the instance of the service that owns the custom model. Omit the parameter to see information about the specified voice with no customisation
     ///
     /// [`WatsonVoice`]: super::voices::WatsonVoice
     /// [`Voice`]: super::voices::Voice

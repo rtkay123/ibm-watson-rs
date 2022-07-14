@@ -17,6 +17,9 @@ struct Args {
     /// The Watson service url
     #[clap(short, long, value_parser)]
     service_url: String,
+    /// The text you want to be synthesised
+    #[clap(short, long, value_parser)]
+    text: String,
 }
 
 #[tokio::main]
@@ -28,7 +31,7 @@ async fn main() {
     println!("{:#?}", voices);
     let voice = tts.get_voice(WatsonVoice::EnGbKateV3, None).await.unwrap();
     println!("{:#?}", voice);
-    let synth = tts.synthesise("Hello world", None, None).await.unwrap();
+    let synth = tts.synthesise(args.text, None, None).await.unwrap();
     let mut file = File::create("file.ogg").unwrap();
     file.write_all(&synth).unwrap();
 }

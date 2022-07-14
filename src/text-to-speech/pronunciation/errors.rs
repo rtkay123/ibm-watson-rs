@@ -13,7 +13,7 @@ pub enum PronunciationError {
     /// A required input parameter is null or a specified input parameter or header value is invalid or not supported
     BadRequest400,
     #[error("The specified customisation_id: {0} is invalid for the requesting credentials")]
-    /// The specified customization_id is invalid for the requesting credentials
+    /// The specified customisation_id is invalid for the requesting credentials
     Unuathorised401(String),
     #[error("The specified voice does not exist")]
     /// The specified voice does not exist or, for IBM Cloud Pak for Data, the voice parameter was not specified but the default voice is not installed. The message is Model '{voice}' not found

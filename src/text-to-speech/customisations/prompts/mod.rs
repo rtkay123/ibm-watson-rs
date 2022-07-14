@@ -84,7 +84,7 @@ impl TextToSpeech<'_> {
     ///
     /// # Parameters
     ///
-    /// * `customisation_id` - The customization ID (GUID) of the custom model. You must make the request with credentials for the instance of the service that owns the custom model
+    /// * `customisation_id` - The customisation ID (GUID) of the custom model. You must make the request with credentials for the instance of the service that owns the custom model
     ///
     /// # Example
     /// ``` no_run
@@ -149,7 +149,7 @@ impl TextToSpeech<'_> {
     ///
     /// # Parameters
     ///
-    /// * `customisation_id` - The customization ID (GUID) of the custom model. You must make the request with credentials for the instance of the service that owns the custom model
+    /// * `customisation_id` - The customisation ID (GUID) of the custom model. You must make the request with credentials for the instance of the service that owns the custom model
     /// * `prompt` - The prompt that is to be added to the custom model
     /// * `audio_file` - An audio file that speaks the text of the prompt with intonation and prosody that matches how you would like the prompt to be spoken
     ///     * The prompt audio must be in WAV format and must have a minimum sampling rate of 16 kHz. The service accepts audio with higher sampling rates. The service transcodes all audio to 16 kHz before processing it
@@ -256,7 +256,7 @@ impl TextToSpeech<'_> {
     ///
     /// # Parameters
     ///
-    /// * `customisation_id` - The customization ID (GUID) of the custom model. You must make the request with credentials for the instance of the service that owns the custom model
+    /// * `customisation_id` - The customisation ID (GUID) of the custom model. You must make the request with credentials for the instance of the service that owns the custom model
     /// * `prompt_id` - The identifier (name) of the prompt
     ///
     /// # Example
@@ -314,7 +314,7 @@ impl TextToSpeech<'_> {
     ///
     /// # Parameters
     ///
-    /// `customisation_id` - The customization ID (GUID) of the custom model. You must make the request with credentials for the instance of the service that owns the custom model
+    /// `customisation_id` - The customisation ID (GUID) of the custom model. You must make the request with credentials for the instance of the service that owns the custom model
     /// `prompt_id` - The identifier (name) of the prompt that is to be deleted
     ///
     /// # Example
