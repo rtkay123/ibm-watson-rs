@@ -1,5 +1,3 @@
-#![feature(doc_cfg)]
-
 //! <h1 style="text-align: center">IBM Watson</h1>
 //! <p style="text-align: center">A wrapper for interacting with IBM Watson's API</p>
 //!
@@ -104,6 +102,7 @@
 //!
 //! <p style="font-style: italic">This is currently unofficial, experimental software that is under development. As such, contributions are welcome.</p>
 //! <p style="font-style: italic">This crate's documentation is sourced from IBM Watson's official <a href = "https://developer.ibm.com/components/watson-apis/apis">API Documentation.</a> If you would like to know more about Watson's API, that would be a good place to start.</p>
+#![cfg_attr(docsrs, feature(doc_cfg))]
 #[warn(
     missing_debug_implementations,
     missing_docs,
@@ -129,7 +128,7 @@
 pub mod auth;
 /// Interact with the IBM Watson™ Text to Speech service
 #[cfg(feature = "tts")]
-#[doc(cfg(feature = "tts"))]
+#[cfg_attr(docsrs, doc(cfg(feature = "tts")))]
 #[path = "text-to-speech/mod.rs"]
 pub mod tts;
 
