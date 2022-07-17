@@ -47,8 +47,8 @@
 //! let synth = tts.synthesise("Hello world", None, None).await?;
 //! let mut file = File::create("file.ogg")?;
 //! file.write_all(&synth)?;
-//! #Ok(());
-//! # }
+//!# Ok(());
+//!# }
 //! ```
 //!
 //! To perform synthesis with a custom voice and in a different audio format:
