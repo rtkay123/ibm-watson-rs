@@ -8,7 +8,7 @@ homepage = "https://www.ibm.com/watson"
 description = "A wrapper for interacting with the IBM Watson API"
 documentation = "https://docs.rs/ibm-watson"
 categories = ["api-bindings", "network-programming", "web-programming", "web-programming::http-client"]
-authors = ["Kawaki"]
+authors = ["kawaki-san"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
