@@ -38,7 +38,7 @@
 //!#     tts::TextToSpeech
 //!# };
 //! # #[tokio::main]
-//! # async fn main() -> Result<(), Box <dyn std::error::Error> {
+//! # async fn main() -> Result<(), Box <dyn std::error::Error>> {
 //! // Get your IAM access token with the API Key of the particular service you want to use
 //! let auth = IamAuthenticator::new("my_api_key").await?;
 //! // Create a new Text To Speech instance that you will use to interact with the API
@@ -47,7 +47,7 @@
 //! let synth = tts.synthesise("Hello world", None, None).await?;
 //! let mut file = File::create("file.ogg")?;
 //! file.write_all(&synth)?;
-//!# Ok(());
+//!# Ok(())
 //!# }
 //! ```
 //!
@@ -61,7 +61,7 @@
 //!#     voices::WatsonVoice},
 //!# };
 //! # #[tokio::main]
-//! # async fn main() -> Result<(), Box <dyn std::error::Error> {
+//! # async fn main() -> Result<(), Box <dyn std::error::Error>> {
 //! # let auth = IamAuthenticator::new("my_api_key").await?;
 //! # let mut tts = TextToSpeech::new(&auth, "tts-endpoint");
 //! // This sets Kate (United Kingdom) to be the default voice for your requests
