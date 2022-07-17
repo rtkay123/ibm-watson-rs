@@ -1,4 +1,4 @@
-use reqwest::{Method, Request, StatusCode, Url};
+use reqwest::{Method, Request, StatusCode, Url, Version};
 use serde::{Deserialize, Serialize};
 pub mod errors;
 
@@ -96,7 +96,12 @@ impl TextToSpeech<'_> {
             url.query_pairs_mut()
                 .append_pair("customization_id", c_id.as_ref());
         }
-        let req = Request::new(Method::GET, url);
+        let mut req = Request::new(Method::GET, url);
+
+        if cfg!(feature = "http2") {
+            *req.version_mut() = Version::HTTP_2;
+        }
+
         let client = self.get_client();
         let response = client
             .execute(req)

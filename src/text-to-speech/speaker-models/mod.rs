@@ -2,7 +2,7 @@ use std::path::Path;
 
 use reqwest::{
     header::{HeaderValue, CONTENT_TYPE},
-    Body, Method, Request, StatusCode, Url,
+    Body, Method, Request, StatusCode, Url, Version,
 };
 use serde::{Deserialize, Serialize};
 use tokio::io::{AsyncReadExt, BufReader};
@@ -48,7 +48,12 @@ impl TextToSpeech<'_> {
     pub async fn list_speaker_models(&self) -> Result<Vec<Speaker>, ListSpeakersError> {
         let mut url = Url::parse(self.service_url).unwrap();
         Self::set_speakers_path(&mut url);
-        let req = Request::new(Method::GET, url);
+        let mut req = Request::new(Method::GET, url);
+
+        if cfg!(feature = "http2") {
+            *req.version_mut() = Version::HTTP_2;
+        }
+
         let client = self.get_client();
         let response = client
             .execute(req)
@@ -137,6 +142,11 @@ impl TextToSpeech<'_> {
         let response = client
             .post(url)
             .header(CONTENT_TYPE, HeaderValue::from_static("audio/wav"))
+            .version(if cfg!(feature = "http2") {
+                Version::HTTP_2
+            } else {
+                Version::default()
+            })
             .body(body)
             .send()
             .await
@@ -184,7 +194,12 @@ impl TextToSpeech<'_> {
     ) -> Result<SpeakerCustomModel, GetSpeakerError> {
         let mut url = Url::parse(self.service_url).unwrap();
         url.set_path(&format!("v1/speakers/{}", speaker_id.as_ref()));
-        let req = Request::new(Method::GET, url);
+        let mut req = Request::new(Method::GET, url);
+
+        if cfg!(feature = "http2") {
+            *req.version_mut() = Version::HTTP_2;
+        }
+
         let client = self.get_client();
         let response = client
             .execute(req)
@@ -237,7 +252,12 @@ impl TextToSpeech<'_> {
     ) -> Result<(), DeleteSpeakerError> {
         let mut url = Url::parse(self.service_url).unwrap();
         url.set_path(&format!("v1/speakers/{}", speaker_id.as_ref()));
-        let req = Request::new(Method::DELETE, url);
+        let mut req = Request::new(Method::DELETE, url);
+
+        if cfg!(feature = "http2") {
+            *req.version_mut() = Version::HTTP_2;
+        }
+
         let client = self.get_client();
         let response = client
             .execute(req)

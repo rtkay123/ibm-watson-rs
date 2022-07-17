@@ -2,7 +2,7 @@ use std::borrow::Cow;
 /// Errors that may be returned in speech synthesis requests
 pub mod errors;
 
-use reqwest::{Method, Request, StatusCode, Url};
+use reqwest::{Method, Request, StatusCode, Url, Version};
 use url::form_urlencoded::byte_serialize;
 
 use self::errors::SynthesisError;
@@ -207,7 +207,12 @@ impl TextToSpeech<'_> {
         if let Some(format) = format {
             url.query_pairs_mut().append_pair("accept", &format.id());
         }
-        let req = Request::new(Method::GET, url);
+        let mut req = Request::new(Method::GET, url);
+
+        if cfg!(feature = "http2") {
+            *req.version_mut() = Version::HTTP_2;
+        }
+
         let client = self.get_client();
         let response = client
             .execute(req)

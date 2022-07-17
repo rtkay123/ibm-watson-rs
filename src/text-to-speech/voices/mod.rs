@@ -1,4 +1,4 @@
-use reqwest::{Method, Request, StatusCode, Url};
+use reqwest::{Method, Request, StatusCode, Url, Version};
 use serde::{Deserialize, Serialize};
 
 /// Errors that may be returned in making Voice requests
@@ -259,7 +259,12 @@ impl TextToSpeech<'_> {
     pub async fn list_voices(&self) -> Result<Vec<Voice>, ListVoicesError> {
         let mut url = Url::parse(self.service_url).unwrap();
         Self::set_voices_path(&mut url);
-        let req = Request::new(Method::GET, url);
+        let mut req = Request::new(Method::GET, url);
+
+        if cfg!(feature = "http2") {
+            *req.version_mut() = Version::HTTP_2;
+        }
+
         let client = self.get_client();
         let response = client
             .execute(req)
@@ -327,7 +332,11 @@ impl TextToSpeech<'_> {
         Self::set_voices_path(&mut url);
         let mut url = Url::parse(&format!("{}/{}", url, id)).unwrap();
         url.set_query(customisation_id);
-        let req = Request::new(Method::GET, url);
+        let mut req = Request::new(Method::GET, url);
+
+        if cfg!(feature = "http2") {
+            *req.version_mut() = Version::HTTP_2;
+        }
         let client = self.get_client();
         let response = client
             .execute(req)

@@ -59,6 +59,9 @@ impl<'a> TextToSpeech<'a> {
         let client = client.default_headers(default_headers);
 
         #[cfg(feature = "http2")]
+        let client = ClientBuilder::use_rustls_tls(client);
+
+        #[cfg(feature = "http2")]
         let client = client.http2_prior_knowledge();
 
         let client = client.build().unwrap();

@@ -1,4 +1,4 @@
-use reqwest::{Method, Request, StatusCode, Url};
+use reqwest::{Method, Request, StatusCode, Url, Version};
 pub mod errors;
 
 use self::errors::DeleteLabeledDataError;
@@ -31,7 +31,12 @@ impl TextToSpeech<'_> {
     ) -> Result<(), DeleteLabeledDataError> {
         let mut url = Url::parse(self.service_url).unwrap();
         url.set_path(&format!("v1/user_data/{}", customer_id.as_ref()));
-        let req = Request::new(Method::DELETE, url);
+        let mut req = Request::new(Method::DELETE, url);
+
+        if cfg!(feature = "http2") {
+            *req.version_mut() = Version::HTTP_2;
+        }
+
         let client = self.get_client();
         let response = client
             .execute(req)

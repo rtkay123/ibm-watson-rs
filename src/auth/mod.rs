@@ -91,8 +91,6 @@ impl IamAuthenticator {
             api_key.as_ref()
         )));
         let client = ClientBuilder::new();
-        #[cfg(feature = "http2")]
-        let client = client.http2_prior_knowledge();
 
         let client = client.build().unwrap();
         let resp = client

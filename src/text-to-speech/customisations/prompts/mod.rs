@@ -3,7 +3,7 @@ use std::path::Path;
 use reqwest::{
     header::{HeaderValue, CONTENT_TYPE},
     multipart::{Form, Part},
-    Method, Request, StatusCode, Url,
+    Method, Request, StatusCode, Url, Version,
 };
 use serde::{Deserialize, Serialize};
 use tokio::io::{AsyncReadExt, BufReader};
@@ -121,7 +121,12 @@ impl TextToSpeech<'_> {
             "v1/customizations/{}/prompts",
             customisation_id.as_ref()
         ));
-        let req = Request::new(Method::GET, url);
+        let mut req = Request::new(Method::GET, url);
+
+        if cfg!(feature = "http2") {
+            *req.version_mut() = Version::HTTP_2;
+        }
+
         let client = self.get_client();
         let response = client
             .execute(req)
@@ -235,6 +240,11 @@ impl TextToSpeech<'_> {
                 CONTENT_TYPE,
                 HeaderValue::from_static("multipart/form-data"),
             )
+            .version(if cfg!(feature = "http2") {
+                Version::HTTP_2
+            } else {
+                Version::default()
+            })
             .multipart(forms)
             .send()
             .await
@@ -285,7 +295,12 @@ impl TextToSpeech<'_> {
             customisation_id.as_ref(),
             prompt_id.as_ref()
         ));
-        let req = Request::new(Method::GET, url);
+        let mut req = Request::new(Method::GET, url);
+
+        if cfg!(feature = "http2") {
+            *req.version_mut() = Version::HTTP_2;
+        }
+
         let client = self.get_client();
         let response = client
             .execute(req)
@@ -344,7 +359,12 @@ impl TextToSpeech<'_> {
             customisation_id.as_ref(),
             prompt_id.as_ref()
         ));
-        let req = Request::new(Method::DELETE, url);
+        let mut req = Request::new(Method::DELETE, url);
+
+        if cfg!(feature = "http2") {
+            *req.version_mut() = Version::HTTP_2;
+        }
+
         let client = self.get_client();
         let response = client
             .execute(req)

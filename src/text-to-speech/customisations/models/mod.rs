@@ -1,6 +1,6 @@
 use std::borrow::Cow;
 
-use reqwest::{Method, Request, StatusCode, Url};
+use reqwest::{Method, Request, StatusCode, Url, Version};
 use serde::{Deserialize, Serialize};
 
 use crate::tts::TextToSpeech;
@@ -169,6 +169,11 @@ impl TextToSpeech<'_> {
         let response = client
             .post(url)
             .json(&form_body)
+            .version(if cfg!(feature = "http2") {
+                Version::HTTP_2
+            } else {
+                Version::default()
+            })
             .send()
             .await
             .map_err(|e| CreateModelError::ConnectionError(e.to_string()))?;
@@ -216,7 +221,12 @@ impl TextToSpeech<'_> {
         let mut url = Url::parse(self.service_url).unwrap();
         url.set_path("v1/customizations");
         url.set_query(Some(&language.unwrap_or_default().id()));
-        let req = Request::new(Method::GET, url);
+        let mut req = Request::new(Method::GET, url);
+
+        if cfg!(feature = "http2") {
+            *req.version_mut() = Version::HTTP_2;
+        }
+
         let client = self.get_client();
         let response = client
             .execute(req)
@@ -306,6 +316,11 @@ impl TextToSpeech<'_> {
         let response = client
             .post(url)
             .json(&data)
+            .version(if cfg!(feature = "http2") {
+                Version::HTTP_2
+            } else {
+                Version::default()
+            })
             .send()
             .await
             .map_err(|e| UpdateModelError::ConnectionError(e.to_string()))?;
@@ -351,7 +366,12 @@ impl TextToSpeech<'_> {
     ) -> Result<Model, GetModelError> {
         let mut url = Url::parse(self.service_url).unwrap();
         url.set_path(&format!("v1/customizations/{}", customisation_id.as_ref()));
-        let req = Request::new(Method::GET, url);
+        let mut req = Request::new(Method::GET, url);
+
+        if cfg!(feature = "http2") {
+            *req.version_mut() = Version::HTTP_2;
+        }
+
         let client = self.get_client();
         let response = client
             .execute(req)
@@ -406,7 +426,12 @@ impl TextToSpeech<'_> {
     ) -> Result<(), DeleteModelError> {
         let mut url = Url::parse(self.service_url).unwrap();
         url.set_path(&format!("v1/customizations/{}", customisation_id.as_ref()));
-        let req = Request::new(Method::DELETE, url);
+        let mut req = Request::new(Method::DELETE, url);
+
+        if cfg!(feature = "http2") {
+            *req.version_mut() = Version::HTTP_2;
+        }
+
         let client = self.get_client();
         let response = client
             .execute(req)

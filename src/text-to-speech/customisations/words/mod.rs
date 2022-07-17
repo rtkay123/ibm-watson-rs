@@ -1,6 +1,6 @@
 use reqwest::{
     header::{HeaderValue, CONTENT_TYPE},
-    Body, Method, Request, StatusCode, Url,
+    Body, Method, Request, StatusCode, Url, Version,
 };
 use serde::{Deserialize, Serialize};
 
@@ -82,6 +82,11 @@ impl TextToSpeech<'_> {
         req.headers_mut()
             .insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
         *req.body_mut() = Some(Body::from(body));
+
+        if cfg!(feature = "http2") {
+            *req.version_mut() = Version::HTTP_2;
+        }
+
         let client = self.get_client();
         let response = client
             .execute(req)
@@ -131,7 +136,12 @@ impl TextToSpeech<'_> {
     ) -> Result<Vec<Word>, ListWordsError> {
         let mut url = Url::parse(self.service_url).unwrap();
         Self::set_words_path(&mut url, &customisation_id);
-        let req = Request::new(Method::GET, url);
+        let mut req = Request::new(Method::GET, url);
+
+        if cfg!(feature = "http2") {
+            *req.version_mut() = Version::HTTP_2;
+        }
+
         let client = self.get_client();
         let response = client
             .execute(req)
@@ -220,6 +230,11 @@ impl TextToSpeech<'_> {
         req.headers_mut()
             .insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
         *req.body_mut() = Some(Body::from(body));
+
+        if cfg!(feature = "http2") {
+            *req.version_mut() = Version::HTTP_2;
+        }
+
         let client = self.get_client();
         let response = client
             .execute(req)
@@ -275,7 +290,12 @@ impl TextToSpeech<'_> {
             customisation_id.as_ref(),
             word.as_ref()
         ));
-        let req = Request::new(Method::GET, url);
+        let mut req = Request::new(Method::GET, url);
+
+        if cfg!(feature = "http2") {
+            *req.version_mut() = Version::HTTP_2;
+        }
+
         let client = self.get_client();
         let response = client
             .execute(req)
@@ -334,7 +354,12 @@ impl TextToSpeech<'_> {
             customisation_id.as_ref(),
             word.as_ref()
         ));
-        let req = Request::new(Method::DELETE, url);
+        let mut req = Request::new(Method::DELETE, url);
+
+        if cfg!(feature = "http2") {
+            *req.version_mut() = Version::HTTP_2;
+        }
+
         let client = self.get_client();
         let response = client
             .execute(req)
