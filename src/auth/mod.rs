@@ -81,12 +81,10 @@ impl IamAuthenticator {
         let url = Url::parse(AUTH_URL).unwrap();
         let mut req = Request::new(Method::POST, url);
         let headers = req.headers_mut();
-        headers
-            .insert(
-                CONTENT_TYPE,
-                HeaderValue::from_str("application/x-www-form-urlencoded").unwrap(),
-            )
-            .unwrap();
+        let _ = headers.insert(
+            CONTENT_TYPE,
+            HeaderValue::from_str("application/x-www-form-urlencoded").unwrap(),
+        );
         let body = req.body_mut();
         *body = Some(Body::from(format!(
             "grant_type=urn:ibm:params:oauth:grant-type:apikey&apikey={}",
