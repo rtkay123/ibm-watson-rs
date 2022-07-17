@@ -36,7 +36,7 @@ clap = { version = "3.2.8", features = [ "derive" ] }
 
 [[example]]
 name = "tts"
-#required-features = ["tts"]
+required-features = ["tts"]
 path = "examples/tts.rs"
 
 # docs.rs-specific configuration
