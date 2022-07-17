@@ -1,7 +1,5 @@
-# ibm-watson
-
-<h1 style="text-align: center">IBM Watson</h1>
-<p style="text-align: center">A wrapper for interacting with IBM Watson's API</p>
+<h1 align="center">IBM Watson</h1>
+<p align="center">A wrapper for interacting with IBM Watson's API</p>
 
 ## Usage
 
@@ -31,14 +29,7 @@ To use the Text To Speech API to synthesise some text with the default options, 
 ibm-watson = { version = "0.1.1", features = [ "tts" ] }
 ```
 
-``` no_run
-## use std::{fs::File, io::Write};
-## use ibm_watson::{
-##     auth::IamAuthenticator,
-##     tts::TextToSpeech
-## };
-## #[tokio::main]
-## async fn main() -> Result<(), Box <dyn std::error::Error> {
+```rust
 // Get your IAM access token with the API Key of the particular service you want to use
 let auth = IamAuthenticator::new("my_api_key").await?;
 // Create a new Text To Speech instance that you will use to interact with the API
@@ -47,13 +38,11 @@ let tts = TextToSpeech::new(&auth, "tts-endpoint");
 let synth = tts.synthesise("Hello world", None, None).await?;
 let mut file = File::create("file.ogg")?;
 file.write_all(&synth)?;
-## Ok(());
-## }
-```rust
+```
 
 To perform synthesis with a custom voice and in a different audio format:
 
-``` no_run
+```rust
 // This sets Kate (United Kingdom) to be the default voice for your requests
 tts.set_voice(WatsonVoice::EnGbKateV3);
 // set the format to MP3 with a sample rate of 44100khz
@@ -90,7 +79,5 @@ Unless you explicitly state otherwise, any contribution intentionally submitted
 for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
 dual licensed as above, without any additional terms or conditions.
 
-<p style="font-style: italic">This is currently unofficial, experimental software that is under development. As such, contributions are welcome.</p>
-<p style="font-style: italic">This crate's documentation is sourced from IBM Watson's official <a href = "https://developer.ibm.com/components/watson-apis/apis">API Documentation.</a> If you would like to know more about Watson's API, that would be a good place to start.</p>
-
-License: MIT OR Apache-2.0
+_This is currently unofficial, experimental software that is under development. As such, contributions are welcome._
+_This crate's documentation is sourced from IBM Watson's official [API Documentation](https://developer.ibm.com/components/watson-apis/apis). If you would like to know more about Watson's API, that would be a good place to start._
