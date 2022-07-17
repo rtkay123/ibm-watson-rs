@@ -1,5 +1,11 @@
 //! <h1 style="text-align: center">IBM Watson</h1>
 //! <p style="text-align: center">A wrapper for interacting with IBM Watson's API</p>
+//! <div align="center">
+//!     <img alt="Crates.io" style="align: center" src="https://img.shields.io/crates/v/ibm-watson">
+//!     <img alt="docs.rs" src="https://img.shields.io/docsrs/ibm-watson">
+//!     <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/kawaki-san/ibm-watson-rs/Cargo%20Build%20&%20Test%20(with%20Docs)">
+//!     <img alt="Crates.io" src="https://img.shields.io/crates/l/ibm-watson">
+//! </div>
 //!
 //! # Usage
 //!
