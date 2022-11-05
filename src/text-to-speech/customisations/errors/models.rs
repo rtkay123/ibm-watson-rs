@@ -1,6 +1,7 @@
 use thiserror::Error;
 
 #[derive(Error, Debug)]
+#[non_exhaustive]
 pub enum CreateModelError {
     /// There was an error establishing the connection
     #[error("There was an error establishing the connection")]
@@ -14,9 +15,13 @@ pub enum CreateModelError {
     /// The service experienced an internal error
     #[error("The service experienced an internal error")]
     InternalServerError500,
+    /// The response code the server returnes
+    #[error("{0}")]
+    UnmappedResponse(u16),
 }
 
 #[derive(Error, Debug)]
+#[non_exhaustive]
 pub enum ListModelError {
     /// There was an error establishing the connection
     #[error("There was an error establishing the connection")]
@@ -30,9 +35,13 @@ pub enum ListModelError {
     /// The service experienced an internal error
     #[error("The service experienced an internal error")]
     InternalServerError500,
+    /// The response code the server returnes
+    #[error("{0}")]
+    UnmappedResponse(u16),
 }
 
 #[derive(Error, Debug)]
+#[non_exhaustive]
 pub enum UpdateModelError {
     /// There was an error establishing the connection
     #[error("There was an error establishing the connection")]
@@ -49,9 +58,13 @@ pub enum UpdateModelError {
     #[error("The specified customisation_id {0} is invalid for the requesting credentials")]
     /// The specified customisation_id is invalid for the requesting credentials
     Unauthorised401(String),
+    /// The response code the server returnes
+    #[error("{0}")]
+    UnmappedResponse(u16),
 }
 
 #[derive(Error, Debug)]
+#[non_exhaustive]
 pub enum GetModelError {
     /// There was an error establishing the connection
     #[error("There was an error establishing the connection")]
@@ -71,9 +84,13 @@ pub enum GetModelError {
     #[error(" The requested resource has not been modified since the time specified by the If-Modified-Since header, as documented in the HTTP specification.")]
     /// The requested resource has not been modified since the time specified by the If-Modified-Since header, as documented in the HTTP specification
     NotModified304,
+    /// The response code the server returnes
+    #[error("{0}")]
+    UnmappedResponse(u16),
 }
 
 #[derive(Error, Debug)]
+#[non_exhaustive]
 pub enum DeleteModelError {
     /// There was an error establishing the connection
     #[error("There was an error establishing the connection")]
@@ -90,4 +107,7 @@ pub enum DeleteModelError {
     #[error("The specified customisation_id {0} is invalid for the requesting credentials")]
     /// The specified customisation_id is invalid for the requesting credentials
     Unauthorised401(String),
+    /// The response code the server returnes
+    #[error("{0}")]
+    UnmappedResponse(u16),
 }

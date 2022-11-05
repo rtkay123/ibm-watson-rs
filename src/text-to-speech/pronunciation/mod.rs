@@ -117,9 +117,9 @@ impl TextToSpeech<'_> {
             StatusCode::SERVICE_UNAVAILABLE => Err(PronunciationError::ServiceUnavailable503),
             StatusCode::BAD_REQUEST => Err(PronunciationError::BadRequest400),
             StatusCode::INTERNAL_SERVER_ERROR => Err(PronunciationError::InternalServerError500),
-            _ => {
-                unreachable!()
-            }
+            _ => Err(PronunciationError::UnmappedResponse(
+                response.status().as_u16(),
+            )),
         }
     }
 }

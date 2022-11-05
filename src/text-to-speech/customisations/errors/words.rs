@@ -1,5 +1,6 @@
 use thiserror::Error;
 #[derive(Error, Debug)]
+#[non_exhaustive]
 pub enum AddWordError {
     /// A required input parameter is null or a specified input parameter or header value is invalid or not supported
     #[error("A required input parameter is null or a specified input parameter or header value is invalid or not supported")]
@@ -16,9 +17,13 @@ pub enum AddWordError {
     /// There was an error establishing the connection
     #[error("There was an error establishing the connection")]
     ConnectionError(#[from] reqwest::Error),
+    /// The response that the server sends back
+    #[error("{0}")]
+    UnmappedResponse(u16),
 }
 
 #[derive(Error, Debug)]
+#[non_exhaustive]
 pub enum ListWordsError {
     /// There was an error establishing the connection
     #[error("There was an error establishing the connection")]
@@ -35,6 +40,10 @@ pub enum ListWordsError {
     /// The specified customisation_id is invalid for the requesting credentials
     #[error("The specified customisation_id {0} is invalid for the requesting credentials")]
     Unauthorised401(String),
+
+    /// The response that the server sends back
+    #[error("{0}")]
+    UnmappedResponse(u16),
 }
 
 #[derive(Error, Debug)]
@@ -53,9 +62,13 @@ pub enum GetWordError {
     #[error("The specified customisation_id {0} is invalid for the requesting credentials")]
     /// The specified customisation_id is invalid for the requesting credentials
     Unauthorised401(String),
+    /// The response that the server sends back
+    #[error("{0}")]
+    UnmappedResponse(u16),
 }
 
 #[derive(Error, Debug)]
+#[non_exhaustive]
 pub enum DeleteWordError {
     /// There was an error establishing the connection
     #[error("There was an error establishing the connection")]
@@ -72,4 +85,7 @@ pub enum DeleteWordError {
     #[error("The specified customisation_id {0} is invalid for the requesting credentials")]
     /// The specified customisation_id is invalid for the requesting credentials
     Unauthorised401(String),
+    /// The response that the server sends back
+    #[error("{0}")]
+    UnmappedResponse(u16),
 }

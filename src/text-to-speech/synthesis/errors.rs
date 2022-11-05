@@ -1,6 +1,7 @@
 use thiserror::Error;
 
 #[derive(Error, Debug)]
+#[non_exhaustive]
 /// Errors that may be returned in speech synethesis
 pub enum SynthesisError {
     #[error("A required input parameter is null or a specified input parameter or header value is invalid")]
@@ -24,4 +25,7 @@ pub enum SynthesisError {
     /// There was an error making the request
     #[error("There was an error establishing the connection")]
     ConnectionError(#[from] reqwest::Error),
+    /// The response that the server sends back
+    #[error("{0}")]
+    UnmappedResponse(u16),
 }

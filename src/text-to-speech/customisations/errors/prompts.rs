@@ -1,6 +1,7 @@
 use thiserror::Error;
 
 #[derive(Error, Debug)]
+#[non_exhaustive]
 pub enum ListPromptsError {
     /// There was an error establishing the connection
     #[error("There was an error establishing the connection")]
@@ -14,9 +15,13 @@ pub enum ListPromptsError {
     /// The service experienced an internal error
     #[error("The service experienced an internal error")]
     InternalServerError500,
+    /// The response that the server sends back
+    #[error("{0}")]
+    UnmappedResponse(u16),
 }
 
 #[derive(Error, Debug)]
+#[non_exhaustive]
 pub enum AddPromptError {
     /// There was an error establishing the connection
     #[error("There was an error establishing the connection")]
@@ -47,9 +52,13 @@ pub enum AddPromptError {
     /// The specified customisation_id is invalid for the requesting credentials
     #[error("The specified customisation_id  {0} is invalid for the requesting credentials")]
     Unauthorised401(String),
+    /// The response that the server sends back
+    #[error("{0}")]
+    UnmappedResponse(u16),
 }
 
 #[derive(Error, Debug)]
+#[non_exhaustive]
 pub enum GetPromptError {
     /// There was an error establishing the connection
     #[error("There was an error establishing the connection")]
@@ -66,9 +75,13 @@ pub enum GetPromptError {
     /// "The specified customisation_id is invalid for the requesting credentials
     #[error("The specified customisation_id {0} is invalid for the requesting credentials")]
     Unauthorised401(String),
+    /// The response that the server sends back
+    #[error("{0}")]
+    UnmappedResponse(u16),
 }
 
 #[derive(Error, Debug)]
+#[non_exhaustive]
 pub enum DeletePromptError {
     /// There was an error establishing the connection
     #[error("There was an error establishing the connection")]
@@ -85,4 +98,7 @@ pub enum DeletePromptError {
     #[error("The specified customisation_id {0} or prompt_id {1} is invalid for the requesting credentials")]
     /// The specified customisation_id is invalid for the requesting credentials
     Unauthorised401(String, String),
+    /// The response that the server sends back
+    #[error("{0}")]
+    UnmappedResponse(u16),
 }

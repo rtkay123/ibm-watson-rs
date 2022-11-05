@@ -227,9 +227,7 @@ impl TextToSpeech<'_> {
             StatusCode::SERVICE_UNAVAILABLE => Err(SynthesisError::ServiceUnavailable500),
             StatusCode::BAD_REQUEST => Err(SynthesisError::BadRequest400),
             StatusCode::NOT_FOUND => Err(SynthesisError::NotFound404),
-            _ => {
-                unreachable!()
-            }
+            _ => Err(SynthesisError::UnmappedResponse(response.status().as_u16())),
         }
     }
 }

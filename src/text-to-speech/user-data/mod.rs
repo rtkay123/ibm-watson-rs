@@ -46,9 +46,9 @@ impl TextToSpeech<'_> {
                 Err(DeleteLabeledDataError::InternalServerError500)
             }
             StatusCode::SERVICE_UNAVAILABLE => Err(DeleteLabeledDataError::ServiceUnavailable503),
-            _ => {
-                unreachable!()
-            }
+            _ => Err(DeleteLabeledDataError::UnmappedResponse(
+                response.status().as_u16(),
+            )),
         }
     }
 }

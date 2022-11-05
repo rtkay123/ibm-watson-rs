@@ -97,9 +97,7 @@ impl TextToSpeech<'_> {
             )),
             StatusCode::INTERNAL_SERVER_ERROR => Err(AddWordError::InternalServerError500),
             StatusCode::SERVICE_UNAVAILABLE => Err(AddWordError::ServiceUnavailable503),
-            _ => {
-                unreachable!()
-            }
+            _ => Err(AddWordError::UnmappedResponse(response.status().as_u16())),
         }
     }
 
@@ -156,9 +154,7 @@ impl TextToSpeech<'_> {
             StatusCode::UNAUTHORIZED => Err(ListWordsError::Unauthorised401(
                 customisation_id.as_ref().to_owned(),
             )),
-            _ => {
-                unreachable!()
-            }
+            _ => Err(ListWordsError::UnmappedResponse(response.status().as_u16())),
         }
     }
 
@@ -239,9 +235,7 @@ impl TextToSpeech<'_> {
             )),
             StatusCode::INTERNAL_SERVER_ERROR => Err(AddWordError::InternalServerError500),
             StatusCode::SERVICE_UNAVAILABLE => Err(AddWordError::ServiceUnavailable503),
-            _ => {
-                unreachable!()
-            }
+            _ => Err(AddWordError::UnmappedResponse(response.status().as_u16())),
         }
     }
 
@@ -300,9 +294,7 @@ impl TextToSpeech<'_> {
             StatusCode::UNAUTHORIZED => Err(GetWordError::Unauthorised401(
                 customisation_id.as_ref().to_owned(),
             )),
-            _ => {
-                unreachable!()
-            }
+            _ => Err(GetWordError::UnmappedResponse(response.status().as_u16())),
         }
     }
 
@@ -360,9 +352,9 @@ impl TextToSpeech<'_> {
             StatusCode::UNAUTHORIZED => Err(DeleteWordError::Unauthorised401(
                 customisation_id.as_ref().to_owned(),
             )),
-            _ => {
-                unreachable!()
-            }
+            _ => Err(DeleteWordError::UnmappedResponse(
+                response.status().as_u16(),
+            )),
         }
     }
 

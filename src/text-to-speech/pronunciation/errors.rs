@@ -1,6 +1,7 @@
 use thiserror::Error;
 
 #[derive(Error, Debug)]
+#[non_exhaustive]
 /// Errors that may be returned in pronunciation requests
 pub enum PronunciationError {
     /// The requested resource has not been modified since the time specified by the If-Modified-Since header, as documented in the HTTP specification
@@ -29,4 +30,7 @@ pub enum PronunciationError {
     /// There was an error making the request
     #[error("There was an error establishing the connection")]
     ConnectionError(#[from] reqwest::Error),
+    /// The response code the server returnes
+    #[error("{0}")]
+    UnmappedResponse(u16),
 }

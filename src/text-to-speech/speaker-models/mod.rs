@@ -69,9 +69,9 @@ impl TextToSpeech<'_> {
             StatusCode::BAD_REQUEST => Err(ListSpeakersError::BadRequest400),
             StatusCode::INTERNAL_SERVER_ERROR => Err(ListSpeakersError::InternalServerError500),
             StatusCode::SERVICE_UNAVAILABLE => Err(ListSpeakersError::ServiceUnavailable503),
-            _ => {
-                unreachable!()
-            }
+            _ => Err(ListSpeakersError::UnmappedResponse(
+                response.status().as_u16(),
+            )),
         }
     }
 
@@ -161,7 +161,9 @@ impl TextToSpeech<'_> {
             StatusCode::UNSUPPORTED_MEDIA_TYPE => Err(CreateSpeakerError::UnsupportedMediaType415),
             StatusCode::INTERNAL_SERVER_ERROR => Err(CreateSpeakerError::InternalServerError500),
             StatusCode::SERVICE_UNAVAILABLE => Err(CreateSpeakerError::ServiceUnavailable503),
-            _ => unreachable!(),
+            _ => Err(CreateSpeakerError::UnmappedResponse(
+                response.status().as_u16(),
+            )),
         }
     }
 
@@ -213,9 +215,9 @@ impl TextToSpeech<'_> {
             StatusCode::NOT_MODIFIED => Err(GetSpeakerError::NotModified304),
             StatusCode::INTERNAL_SERVER_ERROR => Err(GetSpeakerError::InternalServerError500),
             StatusCode::SERVICE_UNAVAILABLE => Err(GetSpeakerError::ServiceUnavailable503),
-            _ => {
-                unreachable!()
-            }
+            _ => Err(GetSpeakerError::UnmappedResponse(
+                response.status().as_u16(),
+            )),
         }
     }
 
@@ -264,9 +266,10 @@ impl TextToSpeech<'_> {
             StatusCode::UNAUTHORIZED => Err(DeleteSpeakerError::Unauthorised401(
                 speaker_id.as_ref().to_owned(),
             )),
-            _ => {
-                unreachable!()
-            }
+
+            _ => Err(DeleteSpeakerError::UnmappedResponse(
+                response.status().as_u16(),
+            )),
         }
     }
 }

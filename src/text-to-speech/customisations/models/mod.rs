@@ -184,9 +184,9 @@ impl TextToSpeech<'_> {
             StatusCode::BAD_REQUEST => Err(CreateModelError::BadRequest400),
             StatusCode::INTERNAL_SERVER_ERROR => Err(CreateModelError::InternalServerError500),
             StatusCode::SERVICE_UNAVAILABLE => Err(CreateModelError::ServiceUnavailable503),
-            _ => {
-                unreachable!()
-            }
+            _ => Err(CreateModelError::UnmappedResponse(
+                response.status().as_u16(),
+            )),
         }
     }
 
@@ -240,9 +240,7 @@ impl TextToSpeech<'_> {
             StatusCode::BAD_REQUEST => Err(ListModelError::BadRequest400),
             StatusCode::INTERNAL_SERVER_ERROR => Err(ListModelError::InternalServerError500),
             StatusCode::SERVICE_UNAVAILABLE => Err(ListModelError::ServiceUnavailable503),
-            _ => {
-                unreachable!()
-            }
+            _ => Err(ListModelError::UnmappedResponse(response.status().as_u16())),
         }
     }
 
@@ -327,9 +325,9 @@ impl TextToSpeech<'_> {
             StatusCode::UNAUTHORIZED => Err(UpdateModelError::Unauthorised401(
                 customisation_id.as_ref().to_owned(),
             )),
-            _ => {
-                unreachable!()
-            }
+            _ => Err(UpdateModelError::UnmappedResponse(
+                response.status().as_u16(),
+            )),
         }
     }
 
@@ -383,9 +381,7 @@ impl TextToSpeech<'_> {
             StatusCode::UNAUTHORIZED => Err(GetModelError::Unauthorised401(
                 customisation_id.as_ref().to_owned(),
             )),
-            _ => {
-                unreachable!()
-            }
+            _ => Err(GetModelError::UnmappedResponse(response.status().as_u16())),
         }
     }
 
@@ -436,9 +432,9 @@ impl TextToSpeech<'_> {
             StatusCode::UNAUTHORIZED => Err(DeleteModelError::Unauthorised401(
                 customisation_id.as_ref().to_owned(),
             )),
-            _ => {
-                unreachable!()
-            }
+            _ => Err(DeleteModelError::UnmappedResponse(
+                response.status().as_u16(),
+            )),
         }
     }
 }

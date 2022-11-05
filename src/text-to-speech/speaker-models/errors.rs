@@ -1,5 +1,6 @@
 use thiserror::Error;
 #[derive(Debug, Error)]
+#[non_exhaustive]
 pub enum ListSpeakersError {
     #[error("The service experienced an internal error.")]
     /// The service experienced an internal error
@@ -13,9 +14,13 @@ pub enum ListSpeakersError {
     /// The request failed. Possible failure causes include. Invalid service credentials were passed with the request
     #[error("The request failed. Possible failure causes include. Invalid service credentials were passed with the request")]
     BadRequest400,
+    /// The response code the server returnes
+    #[error("{0}")]
+    UnmappedResponse(u16),
 }
 
 #[derive(Debug, Error)]
+#[non_exhaustive]
 pub enum CreateSpeakerError {
     /// The request failed. Possible failure causes include: The audio has a media type other than
     /// audio/wav or a sampling rate of less than 16 kHz, The audio is longer than 1 minute, The
@@ -40,9 +45,13 @@ pub enum CreateSpeakerError {
     /// The specified customisation_id is invalid for the requesting credentials
     #[error("The specified customisation_id  {0} is invalid for the requesting credentials")]
     Unauthorised401(String),
+    /// The response code the server returnes
+    #[error("{0}")]
+    UnmappedResponse(u16),
 }
 
 #[derive(Debug, Error)]
+#[non_exhaustive]
 pub enum GetSpeakerError {
     /// There was an error establishing the connection
     #[error("There was an error establishing the connection")]
@@ -61,9 +70,13 @@ pub enum GetSpeakerError {
     /// The requested resource has not been modified since the time specified by the If-Modified-Since header, as documented in the HTTP specification
     #[error("The requested resource has not been modified since the time specified by the If-Modified-Since header, as documented in the HTTP specification")]
     NotModified304,
+    /// The response code the server returnes
+    #[error("{0}")]
+    UnmappedResponse(u16),
 }
 
 #[derive(Error, Debug)]
+#[non_exhaustive]
 pub enum DeleteSpeakerError {
     /// There was an error establishing the connection
     #[error("There was an error establishing the connection")]
@@ -80,4 +93,7 @@ pub enum DeleteSpeakerError {
     #[error("The specified speaker_id {0} is invalid for the requesting credentials")]
     /// The specified speaker_id is invalid for the requesting credentials
     Unauthorised401(String),
+    /// The response code the server returnes
+    #[error("{0}")]
+    UnmappedResponse(u16),
 }

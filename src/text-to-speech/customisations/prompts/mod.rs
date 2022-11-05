@@ -62,7 +62,7 @@ impl From<OuterPrompt> for Prompt {
                 "processing" => Some(PromptStatus::Processing),
                 "available" => Some(PromptStatus::Available),
                 "failed" => Some(PromptStatus::Failed),
-                _ => unreachable!(),
+                _ => unreachable!("prompt status"),
             },
             None => None,
         };
@@ -141,9 +141,9 @@ impl TextToSpeech<'_> {
             StatusCode::BAD_REQUEST => Err(ListPromptsError::BadRequest400),
             StatusCode::INTERNAL_SERVER_ERROR => Err(ListPromptsError::InternalServerError500),
             StatusCode::SERVICE_UNAVAILABLE => Err(ListPromptsError::ServiceUnavailable503),
-            _ => {
-                unreachable!()
-            }
+            _ => Err(ListPromptsError::UnmappedResponse(
+                response.status().as_u16(),
+            )),
         }
     }
 
@@ -255,7 +255,7 @@ impl TextToSpeech<'_> {
             StatusCode::UNSUPPORTED_MEDIA_TYPE => Err(AddPromptError::UnsupportedMediaType415),
             StatusCode::INTERNAL_SERVER_ERROR => Err(AddPromptError::InternalServerError500),
             StatusCode::SERVICE_UNAVAILABLE => Err(AddPromptError::ServiceUnavailable503),
-            _ => unreachable!(),
+            _ => Err(AddPromptError::UnmappedResponse(response.status().as_u16())),
         }
     }
 
@@ -313,9 +313,7 @@ impl TextToSpeech<'_> {
             StatusCode::UNAUTHORIZED => Err(GetPromptError::Unauthorised401(
                 customisation_id.as_ref().to_owned(),
             )),
-            _ => {
-                unreachable!()
-            }
+            _ => Err(GetPromptError::UnmappedResponse(response.status().as_u16())),
         }
     }
 
@@ -372,9 +370,9 @@ impl TextToSpeech<'_> {
                 customisation_id.as_ref().to_owned(),
                 prompt_id.as_ref().to_string(),
             )),
-            _ => {
-                unreachable!()
-            }
+            _ => Err(DeletePromptError::UnmappedResponse(
+                response.status().as_u16(),
+            )),
         }
     }
 }

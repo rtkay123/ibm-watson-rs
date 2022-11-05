@@ -281,9 +281,9 @@ impl TextToSpeech<'_> {
             StatusCode::UNSUPPORTED_MEDIA_TYPE => Err(ListVoicesError::UnsupportedMediaType415),
             StatusCode::INTERNAL_SERVER_ERROR => Err(ListVoicesError::InternalServerError500),
             StatusCode::SERVICE_UNAVAILABLE => Err(ListVoicesError::ServiceUnavailable503),
-            _ => {
-                unreachable!()
-            }
+            _ => Err(ListVoicesError::UnmappedResponse(
+                response.status().as_u16(),
+            )),
         }
     }
 
@@ -347,9 +347,7 @@ impl TextToSpeech<'_> {
             StatusCode::UNSUPPORTED_MEDIA_TYPE => Err(GetVoiceError::UnsupportedMediaType415),
             StatusCode::INTERNAL_SERVER_ERROR => Err(GetVoiceError::InternalServerError500),
             StatusCode::SERVICE_UNAVAILABLE => Err(GetVoiceError::ServiceUnavailable503),
-            _ => {
-                unreachable!()
-            }
+            _ => Err(GetVoiceError::UnmappedResponse(response.status().as_u16())),
         }
     }
 }

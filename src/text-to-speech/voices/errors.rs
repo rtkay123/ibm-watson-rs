@@ -1,6 +1,7 @@
 use thiserror::Error;
 
 #[derive(Error, Debug)]
+#[non_exhaustive]
 /// Errors that may be returned when listing [`Watson Voices`]
 ///
 /// [`Watson Voices`]: crate::tts::voices::WatsonVoice
@@ -20,9 +21,13 @@ pub enum ListVoicesError {
     /// There was an error making the request
     #[error("There was an error establishing the connection")]
     ConnectionError(#[from] reqwest::Error),
+    /// The response that the server sends back
+    #[error("{0}")]
+    UnmappedResponse(u16),
 }
 
 #[derive(Error, Debug)]
+#[non_exhaustive]
 /// Errors that may be returned when getting information about a particular [`WatsonVoice`]
 ///
 /// [`WatsonVoice`]: crate::tts::voices::WatsonVoice
@@ -51,4 +56,7 @@ pub enum GetVoiceError {
     /// There was an error making the request
     #[error("There was an error establishing the connection")]
     ConnectionError(#[from] reqwest::Error),
+    /// The response that the server sends back
+    #[error("{0}")]
+    UnmappedResponse(u16),
 }

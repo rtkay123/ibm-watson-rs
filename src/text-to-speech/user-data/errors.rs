@@ -1,5 +1,6 @@
 use thiserror::Error;
 #[derive(Error, Debug)]
+#[non_exhaustive]
 pub enum DeleteLabeledDataError {
     /// There was an error establishing the connection
     #[error("There was an error establishing the connection")]
@@ -13,4 +14,7 @@ pub enum DeleteLabeledDataError {
     #[error("The service experienced an internal error")]
     /// The service experienced an internal error
     InternalServerError500,
+    /// The response that the server sends back
+    #[error("{0}")]
+    UnmappedResponse(u16),
 }
