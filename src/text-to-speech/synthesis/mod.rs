@@ -214,10 +214,7 @@ impl TextToSpeech<'_> {
         }
 
         let client = self.get_client();
-        let response = client
-            .execute(req)
-            .await
-            .map_err(|e| SynthesisError::ConnectionError(e.to_string()))?;
+        let response = client.execute(req).await?;
         assert_eq!(response.status(), 200);
         match response.status() {
             StatusCode::OK => {

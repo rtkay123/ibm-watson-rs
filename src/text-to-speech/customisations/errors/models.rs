@@ -3,8 +3,8 @@ use thiserror::Error;
 #[derive(Error, Debug)]
 pub enum CreateModelError {
     /// There was an error establishing the connection
-    #[error("{0}")]
-    ConnectionError(String),
+    #[error("There was an error establishing the connection")]
+    ConnectionError(#[from] reqwest::Error),
     #[error("A required input parameter is null or a specified input parameter or header value is invalid or not supported")]
     /// A required input parameter is null or a specified input parameter or header value is invalid or not supported
     BadRequest400,
@@ -19,8 +19,8 @@ pub enum CreateModelError {
 #[derive(Error, Debug)]
 pub enum ListModelError {
     /// There was an error establishing the connection
-    #[error("{0}")]
-    ConnectionError(String),
+    #[error("There was an error establishing the connection")]
+    ConnectionError(#[from] reqwest::Error),
     #[error("A required input parameter is null or a specified input parameter or header value is invalid or not supported")]
     /// A required input parameter is null or a specified input parameter or header value is invalid or not supported
     BadRequest400,
@@ -35,8 +35,8 @@ pub enum ListModelError {
 #[derive(Error, Debug)]
 pub enum UpdateModelError {
     /// There was an error establishing the connection
-    #[error("{0}")]
-    ConnectionError(String),
+    #[error("There was an error establishing the connection")]
+    ConnectionError(#[from] reqwest::Error),
     #[error("A required input parameter is null or a specified input parameter or header value is invalid or not supported")]
     /// A required input parameter is null or a specified input parameter or header value is invalid or not supported
     BadRequest400,
@@ -54,8 +54,8 @@ pub enum UpdateModelError {
 #[derive(Error, Debug)]
 pub enum GetModelError {
     /// There was an error establishing the connection
-    #[error("{0}")]
-    ConnectionError(String),
+    #[error("There was an error establishing the connection")]
+    ConnectionError(#[from] reqwest::Error),
     #[error("A required input parameter is null or a specified input parameter or header value is invalid or not supported")]
     /// A required input parameter is null or a specified input parameter or header value is invalid or not supported
     BadRequest400(String),
@@ -76,8 +76,8 @@ pub enum GetModelError {
 #[derive(Error, Debug)]
 pub enum DeleteModelError {
     /// There was an error establishing the connection
-    #[error("{0}")]
-    ConnectionError(String),
+    #[error("There was an error establishing the connection")]
+    ConnectionError(#[from] reqwest::Error),
     #[error("A required input parameter is null or a specified input parameter or header value is invalid or not supported")]
     /// A required input parameter is null or a specified input parameter or header value is invalid or not supported
     BadRequest400(String),

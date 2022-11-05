@@ -2,8 +2,8 @@ use thiserror::Error;
 #[derive(Error, Debug)]
 pub enum DeleteLabeledDataError {
     /// There was an error establishing the connection
-    #[error("{0}")]
-    ConnectionError(String),
+    #[error("There was an error establishing the connection")]
+    ConnectionError(#[from] reqwest::Error),
     /// The request did not pass a customer ID
     #[error("The request did not pass a customer ID")]
     BadRequest400,

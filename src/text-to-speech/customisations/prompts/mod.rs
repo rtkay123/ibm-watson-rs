@@ -128,10 +128,7 @@ impl TextToSpeech<'_> {
         }
 
         let client = self.get_client();
-        let response = client
-            .execute(req)
-            .await
-            .map_err(|e| ListPromptsError::ConnectionError(e.to_string()))?;
+        let response = client.execute(req).await?;
         match response.status() {
             StatusCode::OK => {
                 #[derive(Deserialize, Serialize)]
@@ -302,10 +299,7 @@ impl TextToSpeech<'_> {
         }
 
         let client = self.get_client();
-        let response = client
-            .execute(req)
-            .await
-            .map_err(|e| GetPromptError::ConnectionError(e.to_string()))?;
+        let response = client.execute(req).await?;
         match response.status() {
             StatusCode::OK => {
                 let root: Prompt = response.json().await.unwrap();
@@ -366,10 +360,7 @@ impl TextToSpeech<'_> {
         }
 
         let client = self.get_client();
-        let response = client
-            .execute(req)
-            .await
-            .map_err(|e| DeletePromptError::ConnectionError(e.to_string()))?;
+        let response = client.execute(req).await?;
         match response.status() {
             StatusCode::NO_CONTENT => Ok(()),
             StatusCode::BAD_REQUEST => Err(DeletePromptError::BadRequest400(

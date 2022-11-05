@@ -38,10 +38,7 @@ impl TextToSpeech<'_> {
         }
 
         let client = self.get_client();
-        let response = client
-            .execute(req)
-            .await
-            .map_err(|e| DeleteLabeledDataError::ConnectionError(e.to_string()))?;
+        let response = client.execute(req).await?;
         match response.status() {
             StatusCode::NO_CONTENT => Ok(()),
             StatusCode::BAD_REQUEST => Err(DeleteLabeledDataError::BadRequest400),

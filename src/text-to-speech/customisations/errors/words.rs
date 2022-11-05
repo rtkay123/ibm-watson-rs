@@ -14,15 +14,15 @@ pub enum AddWordError {
     #[error("The service is currently unavailable.")]
     ServiceUnavailable503,
     /// There was an error establishing the connection
-    #[error("{0}")]
-    ConnectionError(String),
+    #[error("There was an error establishing the connection")]
+    ConnectionError(#[from] reqwest::Error),
 }
 
 #[derive(Error, Debug)]
 pub enum ListWordsError {
     /// There was an error establishing the connection
-    #[error("{0}")]
-    ConnectionError(String),
+    #[error("There was an error establishing the connection")]
+    ConnectionError(#[from] reqwest::Error),
     /// A required input parameter is null or a specified input parameter or header value is invalid or not supported
     #[error("A required input parameter is null or a specified input parameter or header value is invalid or not supported")]
     BadRequest400,
@@ -40,8 +40,8 @@ pub enum ListWordsError {
 #[derive(Error, Debug)]
 pub enum GetWordError {
     /// There was an error establishing the connection
-    #[error("{0}")]
-    ConnectionError(String),
+    #[error("There was an error establishing the connection")]
+    ConnectionError(#[from] reqwest::Error),
     #[error("A required input parameter is null or a specified input parameter or header value is invalid or not supported")]
     BadRequest400,
     /// The service is currently unavailable
@@ -58,8 +58,8 @@ pub enum GetWordError {
 #[derive(Error, Debug)]
 pub enum DeleteWordError {
     /// There was an error establishing the connection
-    #[error("{0}")]
-    ConnectionError(String),
+    #[error("There was an error establishing the connection")]
+    ConnectionError(#[from] reqwest::Error),
     /// A required input parameter is null or a specified input parameter or header value is invalid or not supported
     #[error("A required input parameter is null or a specified input parameter or header value is invalid or not supported")]
     BadRequest400(String),

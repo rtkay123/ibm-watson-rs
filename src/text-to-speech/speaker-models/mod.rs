@@ -55,10 +55,7 @@ impl TextToSpeech<'_> {
         }
 
         let client = self.get_client();
-        let response = client
-            .execute(req)
-            .await
-            .map_err(|e| ListSpeakersError::ConnectionError(e.to_string()))?;
+        let response = client.execute(req).await?;
         match response.status() {
             StatusCode::OK => {
                 #[derive(Deserialize)]
@@ -201,10 +198,7 @@ impl TextToSpeech<'_> {
         }
 
         let client = self.get_client();
-        let response = client
-            .execute(req)
-            .await
-            .map_err(|e| GetSpeakerError::ConnectionError(e.to_string()))?;
+        let response = client.execute(req).await?;
         assert_eq!(response.status(), 200);
         match response.status() {
             StatusCode::OK => {
@@ -259,10 +253,7 @@ impl TextToSpeech<'_> {
         }
 
         let client = self.get_client();
-        let response = client
-            .execute(req)
-            .await
-            .map_err(|e| DeleteSpeakerError::ConnectionError(e.to_string()))?;
+        let response = client.execute(req).await?;
         match response.status() {
             StatusCode::NO_CONTENT => Ok(()),
             StatusCode::BAD_REQUEST => Err(DeleteSpeakerError::BadRequest400(

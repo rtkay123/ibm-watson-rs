@@ -266,10 +266,7 @@ impl TextToSpeech<'_> {
         }
 
         let client = self.get_client();
-        let response = client
-            .execute(req)
-            .await
-            .map_err(|e| ListVoicesError::ConnectionError(e.to_string()))?;
+        let response = client.execute(req).await?;
         match response.status() {
             StatusCode::OK => {
                 #[derive(Deserialize)]
@@ -338,10 +335,7 @@ impl TextToSpeech<'_> {
             *req.version_mut() = Version::HTTP_2;
         }
         let client = self.get_client();
-        let response = client
-            .execute(req)
-            .await
-            .map_err(|e| GetVoiceError::ConnectionError(e.to_string()))?;
+        let response = client.execute(req).await?;
         assert_eq!(response.status(), 200);
         match response.status() {
             StatusCode::OK => {

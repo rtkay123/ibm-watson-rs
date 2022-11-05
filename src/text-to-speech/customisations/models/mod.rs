@@ -175,8 +175,7 @@ impl TextToSpeech<'_> {
                 Version::default()
             })
             .send()
-            .await
-            .map_err(|e| CreateModelError::ConnectionError(e.to_string()))?;
+            .await?;
         match response.status() {
             StatusCode::OK => {
                 let root: Model = response.json().await.unwrap();
@@ -228,10 +227,7 @@ impl TextToSpeech<'_> {
         }
 
         let client = self.get_client();
-        let response = client
-            .execute(req)
-            .await
-            .map_err(|e| ListModelError::ConnectionError(e.to_string()))?;
+        let response = client.execute(req).await?;
         match response.status() {
             StatusCode::OK => {
                 #[derive(Deserialize, Serialize)]
@@ -322,8 +318,7 @@ impl TextToSpeech<'_> {
                 Version::default()
             })
             .send()
-            .await
-            .map_err(|e| UpdateModelError::ConnectionError(e.to_string()))?;
+            .await?;
         match response.status() {
             StatusCode::OK => Ok(()),
             StatusCode::BAD_REQUEST => Err(UpdateModelError::BadRequest400),
@@ -373,10 +368,7 @@ impl TextToSpeech<'_> {
         }
 
         let client = self.get_client();
-        let response = client
-            .execute(req)
-            .await
-            .map_err(|e| GetModelError::ConnectionError(e.to_string()))?;
+        let response = client.execute(req).await?;
         match response.status() {
             StatusCode::OK => {
                 let root: Model = response.json().await.unwrap();
@@ -433,10 +425,7 @@ impl TextToSpeech<'_> {
         }
 
         let client = self.get_client();
-        let response = client
-            .execute(req)
-            .await
-            .map_err(|e| DeleteModelError::ConnectionError(e.to_string()))?;
+        let response = client.execute(req).await?;
         match response.status() {
             StatusCode::NO_CONTENT => Ok(()),
             StatusCode::BAD_REQUEST => Err(DeleteModelError::BadRequest400(

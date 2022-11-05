@@ -21,7 +21,7 @@ pub enum SynthesisError {
     #[error("The service is currently unavailable.")]
     /// The service is currently unavailable
     ServiceUnavailable500,
-    #[error("Connection error: {0}")]
-    /// Some other error occurred in the request
-    ConnectionError(String),
+    /// There was an error making the request
+    #[error("There was an error establishing the connection")]
+    ConnectionError(#[from] reqwest::Error),
 }

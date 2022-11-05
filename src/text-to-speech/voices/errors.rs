@@ -17,9 +17,9 @@ pub enum ListVoicesError {
     #[error("The service is currently unavailable.")]
     /// The service is currently unavailable
     ServiceUnavailable503, // 503
-    #[error("{0}")]
     /// There was an error making the request
-    ConnectionError(String),
+    #[error("There was an error establishing the connection")]
+    ConnectionError(#[from] reqwest::Error),
 }
 
 #[derive(Error, Debug)]
@@ -48,7 +48,7 @@ pub enum GetVoiceError {
     #[error("The service is currently unavailable.")]
     /// The service is currently unavailable
     ServiceUnavailable503,
-    #[error("{0}")]
     /// There was an error making the request
-    ConnectionError(String),
+    #[error("There was an error establishing the connection")]
+    ConnectionError(#[from] reqwest::Error),
 }

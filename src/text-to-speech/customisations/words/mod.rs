@@ -88,10 +88,7 @@ impl TextToSpeech<'_> {
         }
 
         let client = self.get_client();
-        let response = client
-            .execute(req)
-            .await
-            .map_err(|e| AddWordError::ConnectionError(e.to_string()))?;
+        let response = client.execute(req).await?;
         match response.status() {
             StatusCode::OK => Ok(()),
             StatusCode::BAD_REQUEST => Err(AddWordError::BadRequest400),
@@ -143,10 +140,7 @@ impl TextToSpeech<'_> {
         }
 
         let client = self.get_client();
-        let response = client
-            .execute(req)
-            .await
-            .map_err(|e| ListWordsError::ConnectionError(e.to_string()))?;
+        let response = client.execute(req).await?;
         match response.status() {
             StatusCode::OK => {
                 #[derive(Deserialize, Serialize)]
@@ -236,10 +230,7 @@ impl TextToSpeech<'_> {
         }
 
         let client = self.get_client();
-        let response = client
-            .execute(req)
-            .await
-            .map_err(|e| AddWordError::ConnectionError(e.to_string()))?;
+        let response = client.execute(req).await?;
         match response.status() {
             StatusCode::OK => Ok(()),
             StatusCode::BAD_REQUEST => Err(AddWordError::BadRequest400),
@@ -297,10 +288,7 @@ impl TextToSpeech<'_> {
         }
 
         let client = self.get_client();
-        let response = client
-            .execute(req)
-            .await
-            .map_err(|e| GetWordError::ConnectionError(e.to_string()))?;
+        let response = client.execute(req).await?;
         match response.status() {
             StatusCode::OK => {
                 let root: Word = response.json().await.unwrap();
@@ -361,10 +349,7 @@ impl TextToSpeech<'_> {
         }
 
         let client = self.get_client();
-        let response = client
-            .execute(req)
-            .await
-            .map_err(|e| DeleteWordError::ConnectionError(e.to_string()))?;
+        let response = client.execute(req).await?;
         match response.status() {
             StatusCode::NO_CONTENT => Ok(()),
             StatusCode::BAD_REQUEST => Err(DeleteWordError::BadRequest400(

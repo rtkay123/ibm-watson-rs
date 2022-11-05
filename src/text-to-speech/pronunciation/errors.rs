@@ -26,7 +26,7 @@ pub enum PronunciationError {
     /// The service is currently unavailable
     #[error("The service is currently unavailable.")]
     ServiceUnavailable503,
-    #[error("{0}")]
     /// There was an error making the request
-    ConnectionError(String),
+    #[error("There was an error establishing the connection")]
+    ConnectionError(#[from] reqwest::Error),
 }

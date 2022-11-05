@@ -7,9 +7,9 @@ pub enum ListSpeakersError {
     #[error("The service is currently unavailable.")]
     /// The service is currently unavailable
     ServiceUnavailable503, // 503
-    #[error("{0}")]
     /// There was an error making the request
-    ConnectionError(String),
+    #[error("There was an error establishing the connection")]
+    ConnectionError(#[from] reqwest::Error),
     /// The request failed. Possible failure causes include. Invalid service credentials were passed with the request
     #[error("The request failed. Possible failure causes include. Invalid service credentials were passed with the request")]
     BadRequest400,
@@ -17,7 +17,13 @@ pub enum ListSpeakersError {
 
 #[derive(Debug, Error)]
 pub enum CreateSpeakerError {
-    #[error("")]
+    /// The request failed. Possible failure causes include: The audio has a media type other than
+    /// audio/wav or a sampling rate of less than 16 kHz, The audio is longer than 1 minute, The
+    /// speaker name exceeds the 49-character limit or includes characters that are not
+    /// alphanumeric or underscores, The speaker name is not unique within the service instance,
+    /// The service cannot process the audio for any reason (for example, the audio is corrupt),
+    /// Invalid service credentials were passed with the request.
+    #[error("The request failed")]
     BadRequest400,
     #[error("The service is currently unavailable")]
     /// The service is currently unavailable
@@ -39,8 +45,8 @@ pub enum CreateSpeakerError {
 #[derive(Debug, Error)]
 pub enum GetSpeakerError {
     /// There was an error establishing the connection
-    #[error("{0}")]
-    ConnectionError(String),
+    #[error("There was an error establishing the connection")]
+    ConnectionError(#[from] reqwest::Error),
     #[error("A required input parameter is null or a specified input parameter or header value is invalid or not supported")]
     BadRequest400,
     #[error("The service is currently unavailable")]
@@ -60,8 +66,8 @@ pub enum GetSpeakerError {
 #[derive(Error, Debug)]
 pub enum DeleteSpeakerError {
     /// There was an error establishing the connection
-    #[error("{0}")]
-    ConnectionError(String),
+    #[error("There was an error establishing the connection")]
+    ConnectionError(#[from] reqwest::Error),
     /// A required input parameter is null or a specified input parameter or header value is invalid or not supported
     #[error("A required input parameter is null or a specified input parameter or header value is invalid or not supported")]
     BadRequest400(String),
