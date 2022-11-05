@@ -155,7 +155,7 @@ impl TextToSpeech<'_> {
             description: &'a str,
         }
         let name = name.as_ref();
-        let language = language.unwrap_or_default().id().to_owned();
+        let language = language.unwrap_or_default().id().clone();
         let description = match description {
             Some(s) => s.as_ref().to_owned(),
             None => String::default(),

@@ -108,6 +108,7 @@ impl IamAuthenticator {
         }
     }
 
+    #[cfg(feature = "tts")]
     pub(crate) fn token_response(&self) -> &TokenResponse {
         &self.access_token
     }
