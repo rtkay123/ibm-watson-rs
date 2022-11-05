@@ -1,6 +1,6 @@
 [package]
 name = "ibm-watson"
-version = "0.1.1"
+version = "0.2.0-alpha"
 edition = "2021"
 repository = "https://github.com/kawaki-san/ibm-watson-rs"
 license = "MIT OR Apache-2.0"
@@ -25,9 +25,11 @@ url = "2.2.2"
 [features]
 default = []
 tts = []
+stt = []
 http2 = []
 full = [
   "tts",
+  "stt",
 ]
 
 [dev-dependencies]
@@ -38,6 +40,11 @@ clap = { version = "3.2.8", features = [ "derive" ] }
 name = "tts"
 required-features = ["tts"]
 path = "examples/tts.rs"
+
+[[example]]
+name = "stt"
+required-features = ["stt"]
+path = "examples/stt.rs"
 
 # docs.rs-specific configuration
 [package.metadata.docs.rs]
