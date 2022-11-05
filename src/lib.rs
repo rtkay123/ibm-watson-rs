@@ -25,6 +25,7 @@
 //! * `full` - Enables all the features listed below
 //! * `http2` - Enables support of `HTTP/2.0` requests
 //! * `tts` - Enables interacting with the Text To Speech API
+//! * `stt` - Enables interacting with the Speech To Text API
 //!
 //! # Example
 //!
