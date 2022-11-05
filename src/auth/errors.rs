@@ -20,4 +20,7 @@ pub enum AuthenticationError {
     #[error("{0}")]
     /// Network Error
     ConnectionError(String),
+    /// The response code the server returnes
+    #[error("{0}")]
+    UnmappedResponse(u16),
 }

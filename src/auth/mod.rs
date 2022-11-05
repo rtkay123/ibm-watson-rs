@@ -104,11 +104,11 @@ impl IamAuthenticator {
                 Ok(Self { access_token })
             }
             StatusCode::BAD_REQUEST => Err(AuthenticationError::ParameterValidationFailed),
-            _ => unreachable!(),
+            _ => Err(AuthenticationError::UnmappedResponse(resp.status().into())),
         }
     }
 
-    #[cfg(feature = "tts")]
+    #[cfg(any(feature = "tts", feature = "stt"))]
     pub(crate) fn token_response(&self) -> &TokenResponse {
         &self.access_token
     }

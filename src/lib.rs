@@ -138,5 +138,11 @@ pub mod auth;
 #[path = "text-to-speech/mod.rs"]
 pub mod tts;
 
+/// Interact with the IBM Watson™ Speech to Text service
+#[cfg(feature = "stt")]
+#[cfg_attr(docsrs, doc(cfg(feature = "stt")))]
+#[path = "speech-to-text/mod.rs"]
+pub mod stt;
+
 #[cfg(test)]
 mod tests;
